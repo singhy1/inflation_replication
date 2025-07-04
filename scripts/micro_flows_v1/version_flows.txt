@@ -1,0 +1,13 @@
+1. current: 
+
+- layoff 
+- quit 
+
+-other + temporary job ended 
+
+2. layoff + other job ended = layoff 
+- quits 
+- temporary job ended = other 
+
+3. re-entrant + new entrant + temp job ended = other 
+
