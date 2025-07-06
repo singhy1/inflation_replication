@@ -1,8 +1,8 @@
 * Yash Singh 
 * this script performs basic cleaning of the cps basic monthly files 
 
-global data_dir "C:\Users\singhy\Desktop\Chicago\cps_data\inflation\raw_data\CPS"
-global temp_dir "C:\Users\singhy\Desktop\Chicago\cps_data\inflation\temp"
+global data_dir "C:\Users\singhy\Desktop\Chicago\inflation_replication\raw_data\CPS"
+global temp_dir "C:\Users\singhy\Desktop\Chicago\inflation_replication\temp"
 
 cd "$data_dir\cps_00111.dat" 
 
