@@ -11,7 +11,7 @@ rename occ_code oes_occ_code
 save "$proj_dir/temp/onet_teleworkable_blscodes.dta", replace 
 
 
-use "$proj_dir/outputs/atl_fed/atlFed_wage_data_16t24.dta", clear
+use "$proj_dir/outputs/atl_fed/atlFed_wage_data_15t24.dta", clear
 
 * wage group 
 gen wagegroup_num = real(regexs(1)) if regexm(wagegroup, "^([0-9]+)")
