@@ -78,6 +78,60 @@ using CSV, DataFrames, Dates, Statistics, Plots
 
 using CSV, DataFrames, Dates, Plots, Statistics
 
+
+
+#######################################################
+# Figure 3, Panel A 
+#######################################################
+
+# Load quarterly data
+df = CSV.read("$(pathdata)/ee_monthly.csv", DataFrame)
+
+
+# Define start and end dates for filtering
+start_date = Date("2016-01-01")
+end_date = Date("2024-12-01")
+
+# Filter the dataframe based on the date range
+filter!(row -> start_date <= row.date_monthly <= end_date, df)
+
+# Define subperiod start and end dates
+subperiod_start_date = [Date("2016-01-01"), Date("2021-04-01")]
+subperiod_end_date = [Date("2019-10-01"), Date("2023-07-01")]
+
+# Define inflation period
+inflation_period = [Date("2021-04-01"), Date("2023-07-01")]
+
+# Generate ticks and labels for the x-axis
+ticks = collect(minimum(df.date_monthly):Year(1):maximum(df.date_monthly))
+tick_values = Dates.value.(ticks)  # Convert Date to numeric values
+labels = string.(year.(ticks)) .* "-01"  # Append "-01" to the year for labels
+
+# Generate ticks and labels for the x-axis
+#ticks = collect(minimum(df.date_quarterly):Year(1):maximum(df.date_quarterly))
+#tick_values = Dates.value.(ticks)  # Convert Date to numeric values
+#labels = string.(year.(ticks))  # Use year as labels
+
+# Calculate average values for the subperiods
+avg_value = [mean(df.ee_pol[subperiod_start_date[i] .<= df.date_monthly .<= subperiod_end_date[i]]) for i in 1:2]
+
+# Create custom y-axis ticks from 1.8 to 2.7 in 0.3 increments
+y_ticks = 1.8:0.3:2.7
+y_labels = string.(round.(y_ticks, digits=1))
+
+p1 = plot(df.date_monthly, df.ee_pol, label = "", xrotation = 90, alpha = 0.0)
+vspan!(inflation_period, label = "", alpha = 0.3, color = :grey)
+plot!(df.date_monthly, df.ee_pol, label = "", xrotation = 90, color = 1)
+plot!([subperiod_start_date[1], subperiod_end_date[1]], [avg_value[1], avg_value[1]], color = 2, linestyle = :dash, label = "")
+plot!([subperiod_start_date[2], subperiod_end_date[2]], [avg_value[2], avg_value[2]], color = 2, linestyle = :dash, label = "")
+ylims!(p1, 1.8, 2.7)
+yticks!(y_ticks, y_labels)  
+xticks!(tick_values, labels)
+display(p1)
+
+savefig(p1, "$pathfigures/ee_monthly.pdf")
+
+
 # Load data
 df = CSV.read("$(pathdata)/eu_rate.csv", DataFrame)
 df.date_monthly = MonthlyDate.(df.date)

@@ -13,6 +13,10 @@ global output_dir "${path_dir}\output"
 * Load data
 use "$temp_dir/employment_to_population_data.dta", clear
 
+gen date_monthly = ym(_year, month)
+format date_monthly %tm
+
+
 * Create employment flag
 gen emp_flag = (EMPSTAT >= 10 & EMPSTAT <= 12)
 
