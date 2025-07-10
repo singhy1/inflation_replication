@@ -422,6 +422,5 @@ gen str10 period = ""
 replace period = "pre"  if pre_period == 1
 replace period = "inf"  if inf_period == 1
 replace period = "post" if post_period == 1
-drop if period == ""  // removes obs not in any period
 
 save "$proj_dir/temp/atl_cps_matched_dingel_neiman.dta", replace 

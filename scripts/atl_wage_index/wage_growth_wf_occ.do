@@ -27,9 +27,14 @@ collapse (median) med_w_growth = wagegrowthtracker83 (sum) wgt = obs, by(date_mo
 * smooth the series 
 sort wagegroup teleworkable date_monthly
 
-* 3-month moving average (current + lag1 + lag2) / 3
-gen smoothed_med_w_growth = (med_w_growth + med_w_growth[_n-1] +  med_w_growth[_n-2]) / 3
-	
+* 3-month moving average
+gen smoothed_med_w_growth = ( ///
+    med_w_growth + ///
+    med_w_growth[_n-1] + med_w_growth[_n-2] + med_w_growth[_n-3] + med_w_growth[_n-4] + med_w_growth[_n-5] + ///
+    med_w_growth[_n-6] + med_w_growth[_n-7] + med_w_growth[_n-8] + med_w_growth[_n-9] + med_w_growth[_n-10] + ///
+    med_w_growth[_n-11]) / 12
+
+
 rename smoothed_med_w_growth smwg
 
 decode teleworkable, gen(teleworkable_lbl)
