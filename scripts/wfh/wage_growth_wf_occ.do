@@ -16,7 +16,7 @@ replace tel_group = "some" if teleworkable > 0 & teleworkable < 1
 replace tel_group = "high" if teleworkable == 1
 
 
-* share of people in each teleworkable group (pooled across deciles)
+* share of people in each teleworkable group (pooled across quartiles)
 preserve 
 collapse (sum) num_people = obs, by(tel_group)
 egen tot_workers = total(num_people) 
@@ -46,8 +46,8 @@ label define teleworkable_lbl 0 "no_wfh" 1 "high_wfh"
 label values teleworkable teleworkable_lbl
 
 
-*********************************************************************************8
 
+***** Wage Growth by Quartile x Education *****
 
 * take the median wage growth for each group (this is consistent with the aggregation done by the atlanta fed for their aggregate series)
 
@@ -81,6 +81,8 @@ export delimited "$proj_dir/temp/wfh_wage_growth_by_quartile.csv", replace
 restore 
 ******************************************************************************************
 
+
+**** Pooled *****
 
 preserve 
 collapse (median) med_w_growth = wagegrowthtracker83 (sum) wgt = obs, by(date_monthly teleworkable)
