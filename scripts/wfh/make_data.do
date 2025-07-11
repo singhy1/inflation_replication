@@ -370,43 +370,7 @@ replace oes_occ_code = "51-9121" if occ_lbl == "Painting workers 51-9120"
 
 merge m:1 oes_occ_code using "$proj_dir/temp/onet_teleworkable_blscodes.dta"
 
-/*
-*******************************************************************************
-* custom mapping of codes given by Atl Fed and OES occupational codes 
 
-replace oes_occ_code = "15-1131" if occ_lbl == "Software developers, applications and systems software 15-113X"
-
-* the actual codes 
-* 15-1131 : Computer Programmers
-* 15-1132 : Software Developers, Applications
-* 15-1133 : Software Developers, Systems Software
-* 15-1134 : Web Developers
-
-* we aggregate these codes into a single code since this is what Atl fed does 
-* all the codes have teleworkable value of 1 so it does not really matter that we 
-* do this aggregation 
-
-replace oes_occ_code = "49-9041"  if occ_lbl == "Industrial and refractory machinery mechanics 49-904X"
-
-
-
-replace oes_occ_code = "31-201X"  if occ_lbl == "Janitors and building cleaners 31-201X"
-
-replace oes_occ_code = "21-109X"  if occ_lbl == "Miscellaneous community and social service specialists, including health educators and community health workers 21-109X"
-replace oes_occ_code = "5630"     if occ_lbl == "5630"
-replace oes_occ_code = "31-909X"  if occ_lbl == "Miscellaneous healthcare support occupations, including medical equipment preparers 31-909X"
-replace oes_occ_code = "9050"     if occ_lbl == "9050"
-replace oes_occ_code = "25-90XX"  if occ_lbl == "Other education, training, and library workers 25-90XX"
-replace oes_occ_code = "2720"     if occ_lbl == "2720"
-replace oes_occ_code = "1106"     if occ_lbl == "1106"
-replace oes_occ_code = "49-909X"  if occ_lbl == "Other installation, maintenance, and repair workers 49-909X"
-replace oes_occ_code = "47-50XX"  if occ_lbl == "Other extraction workers 47-50XX"
-replace oes_occ_code = "33-909X"  if occ_lbl == "Lifeguards and other recreational and all other protective service workers 33-909X"
-replace oes_occ_code = "53-60XX"  if occ_lbl == "Other transportation workers 53-60XX"
-replace oes_occ_code = "53-40XX"  if occ_lbl == "Subway, streetcar, and other rail transportation workers 53-40XX"
-replace oes_occ_code = "39-40XX"  if occ_lbl == "Embalmers and funeral attendants 39-40XX"
-replace oes_occ_code = "49-209X"  if occ_lbl == "Electrical and electronics repairers, industrial and utility 49-209X"
-*/ 
 
 
 
