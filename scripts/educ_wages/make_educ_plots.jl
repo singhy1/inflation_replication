@@ -72,10 +72,6 @@ using Plots
 
 using CSV, DataFrames, Dates, Statistics, Plots
 
-########################################################################
-# work from home wage data 
-########################################################################
-
 
 df = CSV.read("$(pathdata)/educ_wage_plot_data.csv", DataFrame)
 
@@ -88,21 +84,21 @@ tick_labels = Dates.format.(ticks, "yyyy-mm")
 tick_values = Dates.value.(ticks)
 
 
-# Panel B: Quartile 4 
+# Panel A: All Workers 
 filtered_df = filter(row -> Date("2020-01-01") <= row.date_monthly <= Date("2024-12-31"), df)
 
-# Initialize plot with invisible educ line to set up axis
-p1 = plot(filtered_df.date_monthly, filtered_df.Bachelor_plus_Pooled,
+# Initialize plot with invisible educ line to set up axis   
+p1 = plot(filtered_df.date_monthly, filtered_df.q4_Pooled,
     label = "", xrotation = 90, alpha = 0.0)
 
 # Add shaded inflation period
 vspan!(inflation_period, label = "", alpha = 0.3, color = :grey)
 
-# Add WFH and No WFH lines
-plot!(filtered_df.date_monthly, filtered_df.Bachelor_plus_Pooled,
-    label = "Bachelor+", color = 1)
-plot!(filtered_df.date_monthly, filtered_df.Less_Bachelor_Pooled,
-    label = "Less than Bachelor", color = 2, linestyle = :dash)
+plot!(filtered_df.date_monthly, filtered_df.q1_Pooled,
+    label = "Quartile 1", color = 2, linestyle = :dash)
+
+plot!(filtered_df.date_monthly, filtered_df.q4_Pooled,
+    label = "Quartile 4", color = 1)
 
 # Add horizontal line at y = 0
 hline!([0], color = :black, linestyle = :solid, label = "")
@@ -119,8 +115,42 @@ display(p1)
 # Save to file
 savefig(p1, "$pathfigures/fig_educ_wage_pooled.pdf")
 
+# Panel B: Education < 16 
+filtered_df = filter(row -> Date("2020-01-01") <= row.date_monthly <= Date("2024-12-31"), df)
 
-# Panel B: Quartile 4 
+
+p1 = plot(filtered_df.date_monthly, filtered_df.Bachelor_plus_1st_Quartile,
+    label = "", xrotation = 90, alpha = 0.0)
+
+# Add shaded inflation period
+vspan!(inflation_period, label = "", alpha = 0.3, color = :grey)
+
+
+plot!(filtered_df.date_monthly, filtered_df.Less_Bachelor_1st_Quartile,
+    label = "Quartile 1", color = 2, linestyle = :dash)
+
+plot!(filtered_df.date_monthly, filtered_df.Less_Bachelor_4th_Quartile,
+    label = "Quartile 4", color = 1)
+
+# Add horizontal line at y = 0
+hline!([0], color = :black, linestyle = :solid, label = "")
+
+ylims!(p1, -10, 5)         
+yticks!(p1, -10:2:5)        
+
+xticks!(tick_values, tick_labels)
+
+# Add legend and display
+plot!(legend = :topright)
+display(p1)
+
+# Save to file
+savefig(p1, "$pathfigures/fig_less_bachelor_wage_quartiles.pdf")
+
+
+
+
+# Panel C: Education >= 16 
 filtered_df = filter(row -> Date("2020-01-01") <= row.date_monthly <= Date("2024-12-31"), df)
 
 # Initialize plot with invisible WFH line to set up axis
@@ -130,43 +160,11 @@ p1 = plot(filtered_df.date_monthly, filtered_df.Bachelor_plus_4th_Quartile,
 # Add shaded inflation period
 vspan!(inflation_period, label = "", alpha = 0.3, color = :grey)
 
-plot!(filtered_df.date_monthly, filtered_df.Bachelor_plus_4th_Quartile,
-    label = "Bachelor+", color = 1)
-plot!(filtered_df.date_monthly, filtered_df.Less_Bachelor_4th_Quartile,
-    label = "Less than Bachelor", color = 2, linestyle = :dash)
-
-# Add horizontal line at y = 0
-hline!([0], color = :black, linestyle = :solid, label = "")
-
-ylims!(p1, -10, 5)         
-yticks!(p1, -10:2:5)        
-
-xticks!(tick_values, tick_labels)
-
-# Add legend and display
-plot!(legend = :topright)
-display(p1)
-
-# Save to file
-savefig(p1, "$pathfigures/fig_educ_wage_q4.pdf")
-
-
-
-# Panel B: Quartile 1 
-filtered_df = filter(row -> Date("2020-01-01") <= row.date_monthly <= Date("2024-12-31"), df)
-
-# Initialize plot with invisible WFH line to set up axis
-p1 = plot(filtered_df.date_monthly, filtered_df.Bachelor_plus_1st_Quartile,
-    label = "", xrotation = 90, alpha = 0.0)
-
-# Add shaded inflation period
-vspan!(inflation_period, label = "", alpha = 0.3, color = :grey)
-
-# Add WFH and No WFH lines
 plot!(filtered_df.date_monthly, filtered_df.Bachelor_plus_1st_Quartile,
-    label = "Bachelor+", color = 1)
-plot!(filtered_df.date_monthly, filtered_df.Less_Bachelor_1st_Quartile,
-    label = "Less than Bachelor", color = 2, linestyle = :dash)
+    label = "Quartile 1", color = 2, linestyle = :dash)
+
+plot!(filtered_df.date_monthly, filtered_df.Bachelor_plus_4th_Quartile,
+    label = "Quartile 4", color = 1)
 
 # Add horizontal line at y = 0
 hline!([0], color = :black, linestyle = :solid, label = "")
@@ -181,5 +179,5 @@ plot!(legend = :topright)
 display(p1)
 
 # Save to file
-savefig(p1, "$pathfigures/fig_educ_wage_q1.pdf")
+savefig(p1, "$pathfigures/fig_bachelor_plus_wage_quartile.pdf")
 
