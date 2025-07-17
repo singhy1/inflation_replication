@@ -28,23 +28,23 @@ output_dir = os.path.join(global_dir, "data/processed")
 print("Loading raw data...")
 
 # Stock of Vacancies 
-vacancy_raw = pd.read_excel(f"{data_dir}/CompositeHWI.xlsx")
+vacancy_raw = pd.read_excel(f"{data_dir}/barnichon/barnichon_vacancy.xlsx")
 # Stock of Employed and Unemployed Workers 
-stocks_raw = pd.read_csv(f"{data_dir}/employment_v2.csv")
+stocks_raw = pd.read_csv(f"{data_dir}/fred/fred_employment.csv")
 # JOLTS (level)
-jolts_raw = pd.read_csv(f"{data_dir}/jolts_level_v3.csv")
+jolts_raw = pd.read_csv(f"{data_dir}/jolts/jolts_level.csv")
 # JOLTS (rates)
-jolts_rates_raw = pd.read_csv(f"{data_dir}/jolts_rates_v2.csv")
+jolts_rates_raw = pd.read_csv(f"{data_dir}/jolts/jolts_rates.csv")
 # Consumer Price Index
-cpi_raw = pd.read_csv(f"{data_dir}/CPIAUCSL.csv")
+cpi_raw = pd.read_csv(f"{data_dir}/fred/CPI.csv")
 # Average Wage Quartile
-wage_raw = pd.read_excel(f"{data_dir}/wage-growth-data.xlsx", sheet_name = 'Average Wage Quartile', skiprows=2, header=0)
+wage_raw = pd.read_excel(f"{data_dir}/atl_fed/atl_fed_wage.xlsx", sheet_name = 'Average Wage Quartile', skiprows=2, header=0)
 # FMP
-fmp_raw = pd.read_csv(f"{data_dir}/FMPSA3MA.csv") 
+fmp_raw = pd.read_csv(f"{data_dir}/fmp/fmp_ee_flow.csv") 
 # U-E
-ue_raw = pd.read_csv(f"{data_dir}/UE.csv")
+ue_raw = pd.read_csv(f"{data_dir}/fred/UE.csv")
 # ADP
-adp_raw = pd.read_csv(f"{data_dir}/ADP_PAY_history.csv")
+adp_raw = pd.read_csv(f"{data_dir}/adp/adp_pay_history.csv")
 
 ######################################################################
 # Figure 1.1, Panel A (Same data for Figure 6.1, Panel A, B)
@@ -58,57 +58,22 @@ jolts = jolts_raw.copy()
 
 # Basic Processing of historical vacancies 
 vacancy.columns = ['date', 'V', 'V_rate']  
-vacancy = vacancy.iloc[8:].reset_index(drop=True)
+vacancy = vacancy.iloc[7:].reset_index(drop=True)
 vacancy = vacancy.dropna(subset=['date', 'V'])
 vacancy = vacancy.drop(['V_rate'], axis = 1)
 vacancy['V'] = vacancy['V'].astype(float)
 
-# Define the mapping function with increased tolerance
-def map_to_month(decimal_date):
-    fraction = decimal_date - int(decimal_date)
-    #print("decimal_date", decimal_date)
-    #print("integer decimal_date", int(decimal_date))
-    #print('fraction', fraction)
-    
-    # Define exact mappings with slightly higher tolerance
-    if np.isclose(fraction, 1, atol=0.02):
-        month = 1  # January
-    elif np.isclose(fraction, 0.08, atol=0.02):
-        month = 2  # February
-    elif np.isclose(fraction, 0.17, atol=0.02):
-        month = 3  # March
-    elif np.isclose(fraction, 0.25, atol=0.02):
-        month = 4  # April
-    elif np.isclose(fraction, 0.33, atol=0.02):
-        month = 5  # May
-    elif np.isclose(fraction, 0.42, atol=0.02):
-        month = 6  # June
-    elif np.isclose(fraction, 0.50, atol=0.02):
-        month = 7  # July
-    elif np.isclose(fraction, 0.58, atol=0.02):
-        month = 8  # August
-    elif np.isclose(fraction, 0.67, atol=0.02):
-        month = 9  # September
-    elif np.isclose(fraction, 0.75, atol=0.02):
-        month = 10  # October
-    elif np.isclose(fraction, 0.83, atol=0.02):
-        month = 11  # November
-    elif np.isclose(fraction, 0.92, atol=0.02):
-        month = 12  # December
-    else:
-        raise ValueError(f"Fraction {fraction} does not match any month")
-    
-    return month
-
-# Define the conversion function
-def convert_to_datetime(decimal_date):
-    decimal_date = float(decimal_date)
-    year = int(decimal_date)
-    month = map_to_month(decimal_date)
+# Convert decimal year to datetime
+def decimal_to_datetime(decimal_year):
+    year = int(decimal_year)
+    fraction = decimal_year - year
+    month = int(round(fraction * 12)) + 1  # Adjusting based on your clarification
+    if month > 12:
+        year += 1
+        month = 1
     return pd.Timestamp(year=year, month=month, day=1)
 
-# Apply the conversion function to your dataset
-vacancy['date'] = vacancy['date'].apply(convert_to_datetime)
+vacancy['date'] = vacancy['date'].apply(decimal_to_datetime)
 
 # Basic Processing of stocks 
 stocks.columns = ['date', 'E', 'U']
@@ -159,7 +124,6 @@ print("Processed data for Figure 1.1, Panel A saved.")
 
 final.to_csv(f"{output_dir}/figure_6_1.csv", index=False)
 print("Processed data for Figure 6.1 saved.")
-
 
 ######################################################################
 # Figure 1.1, Panel B (Same data for Figure 2.4, Panel A, B and 

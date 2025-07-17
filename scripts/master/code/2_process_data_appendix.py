@@ -27,47 +27,47 @@ output_dir = os.path.join(global_dir, "data/processed")
 print("Loading raw data...")
 
 # Stock of Vacancies 
-vacancy_raw = pd.read_excel(f"{data_dir}/CompositeHWI.xlsx")
+vacancy_raw = pd.read_excel(f"{data_dir}/barnichon/barnichon_vacancy.xlsx")
 # Stock of Employed and Unemployed Workers 
-stocks_raw = pd.read_csv(f"{data_dir}/employment_v2.csv")
+stocks_raw = pd.read_csv(f"{data_dir}/fred/fred_employment.csv")
 # JOLTS (level)
-jolts_raw = pd.read_csv(f"{data_dir}/jolts_level_v3.csv")
+jolts_raw = pd.read_csv(f"{data_dir}/jolts/jolts_level.csv")
 # JOLTS (rates)
-jolts_rates_raw = pd.read_csv(f"{data_dir}/jolts_rates_v2.csv")
+jolts_rates_raw = pd.read_csv(f"{data_dir}/jolts/jolts_rates.csv")
 # JOLTS (flows)
-jolts_flows_raw = pd.read_excel(f"{data_dir}/jolts_flows.xlsx", skiprows=2)
+jolts_flows_raw = pd.read_excel(f"{data_dir}/jolts/jolts_industry_rates.xlsx", skiprows=2)
 # JOLTS (industry level)
-jolts_industry_raw = pd.read_excel(f"{data_dir}/jolts_industry_level.xlsx", skiprows=2)
+jolts_industry_raw = pd.read_excel(f"{data_dir}/jolts/jolts_industry_level.xlsx", skiprows=2)
 # Consumer Price Index
-cpi_raw = pd.read_csv(f"{data_dir}/CPIAUCSL.csv")
+cpi_raw = pd.read_csv(f"{data_dir}/fred/CPI.csv")
 # Average Wage Quartile
-wage_raw = pd.read_excel(f"{data_dir}/wage-growth-data.xlsx", sheet_name = 'Average Wage Quartile', skiprows=2, header=0)
+wage_raw = pd.read_excel(f"{data_dir}/atl_fed/atl_fed_wage.xlsx", sheet_name = 'Average Wage Quartile', skiprows=2, header=0)
 # Job Switcher and Stayer Wage Growth
-switcher_raw = pd.read_excel(f"{data_dir}/wage-growth-data.xlsx", sheet_name = 'Job Switcher', skiprows=2, header=0)    
+switcher_raw = pd.read_excel(f"{data_dir}/atl_fed/atl_fed_wage.xlsx", sheet_name = 'Job Switcher', skiprows=2, header=0)    
 # FMP
-fmp_raw = pd.read_csv(f"{data_dir}/FMPSA3MA.csv") 
+fmp_raw = pd.read_csv(f"{data_dir}/fmp/fmp_ee_flow.csv") 
 # UE
-ue_raw = pd.read_csv(f"{data_dir}/UE.csv")
+ue_raw = pd.read_csv(f"{data_dir}/fred/UE.csv")
 # EU
-eu_raw = pd.read_csv(f"{data_dir}/EU.csv")
+eu_raw = pd.read_csv(f"{data_dir}/fred/EU.csv")
 # NE
-ne_raw = pd.read_csv(f"{data_dir}/NE.csv")
+ne_raw = pd.read_csv(f"{data_dir}/fred/NE.csv")
 # NU
-nu_raw = pd.read_csv(f"{data_dir}/NU.csv")
+nu_raw = pd.read_csv(f"{data_dir}/fred/NU.csv")
 # Unemployment Rate
-u_rate_raw = pd.read_csv(f"{data_dir}/u_rate.csv")
+u_rate_raw = pd.read_csv(f"{data_dir}/fred/fred_urate.csv")
 # Employment to Population Ratio
-emp2pop_raw = pd.read_csv(f"{data_dir}/emp_2_pop_ratio.csv")
+emp2pop_raw = pd.read_csv(f"{data_dir}/fred/fred_emp2pop.csv")
 # ADP
-adp_raw = pd.read_csv(f"{data_dir}/ADP_PAY_history.csv")
+adp_raw = pd.read_csv(f"{data_dir}/adp/adp_pay_history.csv")
 # Employment by Industry
-emp_industry_raw = pd.read_excel(f"{data_dir}/hours-employment-detailed-industries.xlsx", sheet_name="MachineReadable")
+emp_industry_raw = pd.read_excel(f"{data_dir}/bls/hours_employed_industry.xlsx", sheet_name="MachineReadable")
 # Employment Flow by Education
-ee_flows_raw = pd.read_csv(f"{data_dir}/flows_by_education.csv")
+ee_flows_raw = pd.read_csv(f"{data_dir}/lehd/flows_by_education.csv")
 # Employment by Education
-employment_raw = pd.read_csv(f"{data_dir}/employment_by_education.csv")
+employment_raw = pd.read_csv(f"{data_dir}/lehd/employment_by_education.csv")
 # Profit share
-profit_share_raw = pd.read_csv(f"{data_dir}/profit_share.csv")
+profit_share_raw = pd.read_csv(f"{data_dir}/fred/profit_share.csv")
 
 
 

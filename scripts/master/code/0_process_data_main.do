@@ -2,13 +2,13 @@ global data_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/master
 global output_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/processed"
 
 preserve 
-import delimited "$data_dir/onet_teleworkable_blscodes.csv", clear 
+import delimited "$data_dir/dingelneiman/onet_wfh_code.csv", clear 
 rename occ_code oes_occ_code 
 tempfile onet_temp
 save `onet_temp'
 restore
 
-use "$data_dir//atlFed_wage_data_15t24.dta", clear
+use "$data_dir/atl_fed/atl_fed_wage_raw.dta", clear
 
 
 * wage group 

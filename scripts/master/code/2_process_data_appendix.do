@@ -3,7 +3,7 @@ global output_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master
 
 ******* Figure B.5, Panel B, C ******************************************************
 
-use "$data_dir/atlFed_wage_data_15t24.dta", clear
+use "$data_dir/atl_fed/atl_fed_wage_raw.dta", clear
 
 gen obs = 1
 
@@ -48,7 +48,7 @@ restore
 
 ******* Figure B.8 **************************************************************
 
-use "$data_dir/atlFed_wage_data_15t24.dta", clear
+use "$data_dir/atl_fed/atl_fed_wage_raw.dta", clear
 
 * Create education group label based on numeric codes
 gen educ_group_lbl = ""
