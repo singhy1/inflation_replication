@@ -80,6 +80,59 @@ using CSV, DataFrames, Dates, Plots, Statistics
 
 
 
+
+
+######################################################################
+# Figure 1, Panel A 
+######################################################################
+
+df = CSV.read("$(pathdata)/historical_data_feb.csv", DataFrame,ntasks=1)
+df.date_monthly = MonthlyDate.(df.date)
+
+filtered_df = filter(row -> MonthlyDate(2001,1) <= row.date_monthly, df)
+
+ticks = Dates.value.(collect(df.date_monthly[2]:Month(24):MonthlyDate(2025,2)))
+labels = [Dates.format(d, "yyyy-01") for d in collect(df.date_monthly[2]:Month(24):MonthlyDate(2025,2))]
+#ticks = Dates.value.(collect(df.date_monthly[2]:Month(24):maximum(df.date_monthly)))
+#labels = [Dates.format(d, "yyyy-01") for d in collect(df.date_monthly[2]:Month(24):maximum(df.date_monthly))]
+
+p1 = plot(filtered_df.date_monthly, filtered_df.tightness, label = "", xrotation = 90)
+ylims!(p1, 0.0, 2.25)
+xticks!(ticks, labels)
+display(p1)
+savefig(p1, "$pathfigures/market_tightness_jolts_feb.pdf")
+
+
+
+
+print(kkk)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #######################################################
 # Figure 3, Panel A 
 #######################################################

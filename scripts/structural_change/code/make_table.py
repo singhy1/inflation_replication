@@ -195,27 +195,41 @@ industry_map = {
     "44000000": "Retail trade",
     "48009900": "Transportation, warehousing, and utilities",
     "51000000": "Information",
-    "51009900": "Information (detailed)",
-    "52000000": "Financial activities",
-    "53000000": "Finance and insurance",
-    "54009900": "Real estate and rental and leasing",
-    "60000000": "Professional and business services",
-    "61000000": "Professional, scientific, and technical services",
-    "62000000": "Administrative and support and waste management",
-    "70000000": "Education and health services",
-    "71000000": "Educational services",
-    "72000000": "Health care and social assistance",
-    "81000000": "Leisure and hospitality",
-    "90000000": "Other services",
+    "51009900": "Financial activities",
+    "52000000": "Finance and insurance",
+    "53000000": "Real estate and rental and leasing",
+    "54009900": "Professional and business services",
+    "60000000": "Private education and health services", 
+    "61000000": "Private education services",
+    "62000000": "Healthcare and Social Assistance",
+    "70000000": "Leisure and Hospitality",
+    "71000000": "Arts, entertainment, and recreation",
+    "72000000": "Accomodation and food services",
+    "81000000": "Other services",
+    "90000000": "Government",
     "91000000": "Federal government",
     "92000000": "State and local government",
-    "92300000": "State government",
-    "92900000": "Local government"
+    "92300000": "State and local government education",
+    "92900000": "State and local government, excluding education"
 }
 
 # Apply mappings
 df_long["flow_type"] = df_long["flow_type_code"].map(flow_type_map)
 df_long["industry"] = df_long["industry_code"].map(industry_map)
+
+# List of industry labels to drop
+industries_to_drop = [
+    'Financial activities',
+    'Manufacturing',
+    'Leisure and Hospitality',
+    'Private education and health services',
+    'Trade, transportation, and utilities',
+]
+
+# Filter the DataFrame
+df_long = df_long[~df_long['industry'].isin(industries_to_drop)]
+
+
 
 df_long = df_long.rename(columns={
     'value': 'rate',
