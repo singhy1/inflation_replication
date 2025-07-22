@@ -1,1 +1,3 @@
-/scripts/master/data/raw/atl_fed/*.dta
+*.dta
+*.dat
+.DS_Store

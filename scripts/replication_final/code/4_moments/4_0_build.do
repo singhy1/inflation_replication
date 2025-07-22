@@ -1,0 +1,413 @@
+* Yash Singh 
+* date: 7/11/24 
+* goal: this script takes in the raw asec data and performs some cleaning and sample selection. 
+
+set more off
+
+global data_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/moments/raw"
+global temp_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/moments/temp"
+global output_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/moments/temp"
+
+* CPI Cleanings 
+import excel "$data_dir/CPI.xls", cellrange(A11) firstrow clear
+
+* Rename columns
+rename observation_date date_monthly
+rename CPIAUCSL cpi
+
+format date_monthly %td
+
+sort date_monthly
+gen inflation_4m = (cpi / cpi[_n-4] - 1) * 100 if _n > 4
+gen inflation_12m = (cpi / cpi[_n-12] - 1) * 100 if _n > 12
+
+
+gen cpi_12m_lag = cpi[_n-12] if _n > 12
+
+gen year = year(date_monthly)
+
+bysort year: egen avg_cpi_12m_lag = mean(cpi_12m_lag)
+
+
+save "$temp_dir/cpi_clean.dta", replace
+
+cd "$data_dir/cps_00110.dat"
+
+clear
+quietly infix                  ///
+  int     year        1-4      ///
+  long    serial      5-9      ///
+  byte    month       10-11    ///
+  double  cpsid       12-25    ///
+  byte    asecflag    26-26    ///
+  double  asecwth     27-37    ///
+  byte    pernum      38-39    ///
+  double  cpsidp      40-53    ///
+  double  cpsidv      54-68    ///
+  double  asecwt      69-79    ///
+  double  earnweek2   80-87    ///
+  double  hourwage2   88-92    ///
+  byte    age         93-94    ///
+  byte    sex         95-95    ///
+  int     race        96-98    ///
+  byte    empstat     99-100   ///
+  byte    labforce    101-101  ///
+  int     occ1990     102-104  ///
+  int     ind1990     105-107  ///
+  byte    classwkr    108-109  ///
+  int     uhrswork1   110-112  ///
+  byte    durunem2    113-114  ///
+  byte    whyunemp    115-115  ///
+  int     educ        116-118  ///
+  double  earnwt      119-128  ///
+  int     occ90ly     129-131  ///
+  int     ind90ly     132-134  ///
+  byte    wkswork1    135-136  ///
+  int     uhrsworkly  137-139  ///
+  double  incwage     140-147  ///
+  byte    paidhour    148-148  ///
+  using `"cps_00110.dat"'
+
+replace asecwth    = asecwth    / 10000
+replace asecwt     = asecwt     / 10000
+replace earnweek2  = earnweek2  / 100
+replace hourwage2  = hourwage2  / 100
+replace earnwt     = earnwt     / 10000
+
+format cpsid      %14.0f
+format asecwth    %11.4f
+format cpsidp     %14.0f
+format cpsidv     %15.0f
+format asecwt     %11.4f
+format earnweek2  %8.2f
+format hourwage2  %5.2f
+format earnwt     %10.4f
+format incwage    %8.0f
+
+label var year       `"Survey year"'
+label var serial     `"Household serial number"'
+label var month      `"Month"'
+label var cpsid      `"CPSID, household record"'
+label var asecflag   `"Flag for ASEC"'
+label var asecwth    `"Annual Social and Economic Supplement Household weight"'
+label var pernum     `"Person number in sample unit"'
+label var cpsidp     `"CPSID, person record"'
+label var cpsidv     `"Validated Longitudinal Identifier"'
+label var asecwt     `"Annual Social and Economic Supplement Weight"'
+label var earnweek2  `"Weekly earnings (rounded)"'
+label var hourwage2  `"Hourly wage (rounded)"'
+label var age        `"Age"'
+label var sex        `"Sex"'
+label var race       `"Race"'
+label var empstat    `"Employment status"'
+label var labforce   `"Labor force status"'
+label var occ1990    `"Occupation, 1990 basis"'
+label var ind1990    `"Industry, 1990 basis"'
+label var classwkr   `"Class of worker "'
+label var uhrswork1  `"Hours usually worked per week at main job"'
+label var durunem2   `"Continuous weeks unemployed, intervalled"'
+label var whyunemp   `"Reason for unemployment"'
+label var educ       `"Educational attainment recode"'
+label var earnwt     `"Earnings weight"'
+label var occ90ly    `"Occupation last year, 1990 basis"'
+label var ind90ly    `"Industry last year, 1990 basis"'
+label var wkswork1   `"Weeks worked last year"'
+label var uhrsworkly `"Usual hours worked per week (last yr)"'
+label var incwage    `"Wage and salary income"'
+label var paidhour   `"Paid by the hour"'
+
+rename year YEAR 
+rename month MONTH 
+rename cpsid CPSID 
+rename cpsidp CPSIDP 
+rename asecwth ASECWTH
+rename pernum PERNUM 
+rename asecwt ASECWT
+rename age AGE 
+rename sex SEX 
+rename race RACE 
+rename empstat EMPSTAT 
+rename labforce LABFORCE 
+rename occ1990 OCC1990
+rename ind1990 IND1990
+rename occ90ly OCC90LY 
+rename ind90ly IND90LY
+rename classwkr CLASSWKR
+rename uhrswork1 UHRSWORK1
+rename earnwt EARNWT
+rename incwage INCWAGE 
+rename wkswork1 WKSWORK1 
+rename hourwage2 HOURWAGE2
+rename earnweek2 EARNWEEK2
+rename educ EDUC 
+rename paidhour PAIDHOUR
+rename durunem2 DURUNEM2 
+
+
+* sample selection 
+keep if YEAR >= 2016
+keep if YEAR <= 2019
+
+* Full-year, Full-Time 
+keep if AGE >= 25
+keep if AGE <= 55 
+
+* top coding and imputed wages are dropped 
+drop if INCWAGE == 0 
+*drop if INCWAGE > 150000
+
+drop if WKSWORK1 < 40 
+drop if uhrsworkly  < 35
+
+* weekly earnings and wages 
+gen weekly_earnings = INCWAGE / WKSWORK1
+
+* hourly wage
+gen hourly_wage = weekly_earnings/uhrsworkly 
+
+drop if hourly_wage <= 2.13 
+
+
+* Generate percentiles by year and month
+bysort YEAR MONTH: egen p5_earnings = pctile(weekly_earnings), p(1)
+bysort YEAR MONTH: egen p95_earnings = pctile(weekly_earnings), p(99)
+
+* Drop observations outside the 3rd and 97th percentiles
+drop if weekly_earnings < p5_earnings | weekly_earnings > p95_earnings
+
+*drop if weekly_earnings < p5_earnings
+
+* Clean up
+drop p5_earnings p95_earnings
+
+
+
+* Education 
+gen educ = .
+replace educ = 1 if EDUC < 111
+replace educ = 2 if EDUC >= 111
+label define educ_label 1 "Less than College" 2 "College+"
+label values educ educ_label
+
+
+gen date_monthly = mdy(MONTH, 1, YEAR)
+format date_monthly %td
+
+* Step 3: Calculate average price index for Q1 2019
+preserve
+use "$temp_dir/cpi_clean.dta", clear
+keep if date_monthly >= td(01jan2019) & date_monthly <= td(01mar2019)
+summarize cpi
+local price_index_q1_2019 = r(mean)
+restore
+
+* Step 4: Merge CPS data with CPI data
+merge m:1 date_monthly using "$temp_dir/cpi_clean.dta", keep(match master) nogenerate
+
+* Step 5: Calculate real weekly and hourly earnings in 2019 dollars
+gen real_wkly_earn = (weekly_earnings / avg_cpi_12m_lag ) * `price_index_q1_2019'
+
+
+gen final_wgt = int(ASECWT)
+
+keep YEAR MONTH CPSIDP final_wgt real_wkly_earn 
+
+*** WEEKLY EARNINGS **** 
+preserve 
+sort YEAR 
+by YEAR: egen earn_decile = xtile(real_wkly_earn), nquantiles(10) weight(final_wgt)
+
+collapse (mean) real_wkly_earn, by(YEAR earn_decile)
+drop if missing(earn_decile)
+reshape wide real_wkly_earn, i(YEAR) j(earn_decile)
+
+rename YEAR smpl_yr 
+gen report_yr = smpl_yr[_n-1]
+drop if missing(report_yr)
+drop if report_yr < 2016
+
+
+save "$output_dir/asec_weekly_earnings_dist.dta", replace 
+export excel using "$output_dir/asec_wkly_earnings_dist.xlsx", firstrow(variables) replace
+restore 
+
+
+egen year_month = group(YEAR MONTH)
+levelsof year_month, local(ym)
+
+gen real_earn_d = .
+
+quietly foreach y of local ym {
+    _pctile real_wkly_earn [pweight=final_wgt] if year_month == `y', nquantiles(10)
+    forvalues i = 1/9 {
+        replace real_earn_d = `i' if year_month == `y' & real_wkly_earn <= r(r`i') & real_earn_d == .
+    }
+    replace real_earn_d = 10 if year_month == `y' & real_earn_d == .
+}
+
+keep CPSIDP real_earn_d
+duplicates drop
+duplicates drop CPSIDP, force
+
+
+save "$temp_dir/asec_workers_by_earn_decile.dta", replace
+
+* CPS Basic Monthly Data 
+
+cd "$data_dir/cps_00108.dat" 
+
+set more off
+
+clear
+quietly infix                   ///
+  int     year         1-4      ///
+  long    serial       5-9      ///
+  byte    month        10-11    ///
+  double  hwtfinl      12-21    ///
+  double  cpsid        22-35    ///
+  byte    asecflag     36-36    ///
+  byte    mish         37-37    ///
+  byte    region       38-39    ///
+  byte    pernum       40-41    ///
+  double  wtfinl       42-55    ///
+  double  cpsidv       56-70    ///
+  double  cpsidp       71-84    ///
+  double  earnweek2    85-92    ///
+  double  hourwage2    93-97    ///
+  byte    age          98-99    ///
+  byte    sex          100-100  ///
+  int     race         101-103  ///
+  byte    nativity     104-104  ///
+  byte    empstat      105-106  ///
+  byte    labforce     107-107  ///
+  int     occ1990      108-110  ///
+  byte    classwkr     111-112  ///
+  int     uhrswork1    113-115  ///
+  byte    durunem2     116-117  ///
+  byte    whyunemp     118-118  ///
+  byte    wkstat       119-120  ///
+  byte    empsame      121-122  ///
+  int     educ         123-125  ///
+  double  earnwt       126-135  ///
+  double  compwt       136-149  ///
+  double  lnkfw1mwt    150-163  ///
+  double  hourwage     164-168  ///
+  byte    paidhour     169-169  ///
+  double  earnweek     170-177  ///
+  int     uhrsworkorg  178-180  ///
+  byte    wksworkorg   181-182  ///
+  using `"cps_00108.dat"'
+
+replace hwtfinl     = hwtfinl     / 10000
+replace wtfinl      = wtfinl      / 10000
+replace earnweek2   = earnweek2   / 100
+replace hourwage2   = hourwage2   / 100
+replace earnwt      = earnwt      / 10000
+replace compwt      = compwt      / 10000
+replace lnkfw1mwt   = lnkfw1mwt   / 10000
+replace hourwage    = hourwage    / 100
+replace earnweek    = earnweek    / 100
+
+format hwtfinl     %10.4f
+format cpsid       %14.0f
+format wtfinl      %14.4f
+format cpsidv      %15.0f
+format cpsidp      %14.0f
+format earnweek2   %8.2f
+format hourwage2   %5.2f
+format earnwt      %10.4f
+format compwt      %14.4f
+format lnkfw1mwt   %14.4f
+format hourwage    %5.2f
+format earnweek    %8.2f
+
+label var year        `"Survey year"'
+label var serial      `"Household serial number"'
+label var month       `"Month"'
+label var hwtfinl     `"Household weight, Basic Monthly"'
+label var cpsid       `"CPSID, household record"'
+label var asecflag    `"Flag for ASEC"'
+label var mish        `"Month in sample, household level"'
+label var region      `"Region and division"'
+label var pernum      `"Person number in sample unit"'
+label var wtfinl      `"Final Basic Weight"'
+label var cpsidv      `"Validated Longitudinal Identifier"'
+label var cpsidp      `"CPSID, person record"'
+label var earnweek2   `"Weekly earnings (rounded)"'
+label var hourwage2   `"Hourly wage (rounded)"'
+label var age         `"Age"'
+label var sex         `"Sex"'
+label var race        `"Race"'
+label var nativity    `"Foreign birthplace or parentage"'
+label var empstat     `"Employment status"'
+label var labforce    `"Labor force status"'
+label var occ1990     `"Occupation, 1990 basis"'
+label var classwkr    `"Class of worker "'
+label var uhrswork1   `"Hours usually worked per week at main job"'
+label var durunem2    `"Continuous weeks unemployed, intervalled"'
+label var whyunemp    `"Reason for unemployment"'
+label var wkstat      `"Full or part time status"'
+label var empsame     `"Still working for same employer"'
+label var educ        `"Educational attainment recode"'
+label var earnwt      `"Earnings weight"'
+label var compwt      `"Composite Weight for replicating BLS labor force estimates"'
+label var lnkfw1mwt   `"Longitudinal weight for two adjacent months (BMS only)"'
+label var hourwage    `"Hourly wage"'
+label var paidhour    `"Paid by the hour"'
+label var earnweek    `"Weekly earnings"'
+label var uhrsworkorg `"Usual hours worked per week, outgoing rotation groups"'
+label var wksworkorg  `"Weeks worked per year, outgoing rotation groups"'
+
+
+
+
+rename year YEAR 
+rename month MONTH 
+rename cpsid CPSID 
+rename cpsidp CPSIDP 
+rename mish MISH 
+rename wtfinl WTFINL 
+rename age AGE 
+rename sex SEX 
+rename empstat EMPSTAT 
+rename labforce LABFORCE 
+rename occ1990 OCC1990
+rename empsame EMPSAME
+rename whyunemp WHYUNEMP
+rename educ EDUC 
+rename lnkfw1mwt LNKFW1MWT
+rename hourwage HOURWAGE 
+rename paidhour PAIDHOUR 
+rename earnweek EARNWEEK 
+rename uhrsworkorg UHRSWORKORG 
+rename earnwt EARNWT
+rename uhrswork1 UHRSWORK1
+rename hourwage2 HOURWAGE2
+rename earnweek2 EARNWEEK2
+rename race RACE 
+rename region REGION
+rename nativity NATIVITY 
+rename classwkr CLASSWKR
+rename durunem2 DURUNEM2  
+
+*****************************************************
+*****************************************************
+
+* Education 
+
+gen date_monthly = mdy(MONTH, 1, YEAR)
+format date_monthly %td
+
+gen educ = .
+replace educ = 1 if EDUC < 111
+replace educ = 2 if EDUC >= 111
+label define educ_label 1 "Less than College" 2 "College+"
+label values educ educ_label
+
+merge m:1 CPSIDP using "$temp_dir/asec_workers_by_earn_decile.dta"
+drop if _merge == 2
+drop if _merge == 1 
+drop _merge 
+
+save "$temp_dir/cps_basic_monthly_matched.dta", replace 
+
