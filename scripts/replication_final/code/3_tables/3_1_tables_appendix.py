@@ -1,7 +1,7 @@
 ######################################################################
 # Last Modified: 7/21/2025
 # This Code:
-# - takes data from /master/data/processed and /master/data/raw
+# - takes data from /replication_final/data/processed and /replication_final/data/raw
 # - makes figures for the appendix 
 ######################################################################
 
@@ -15,7 +15,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Set directories (Set your own global path)
-global_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/master/"
+global_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/"
 data_dir = os.path.join(global_dir, "data/raw")
 data_processed_dir = os.path.join(global_dir, "data/processed")
 figures_dir = os.path.join(global_dir, "output/figures")

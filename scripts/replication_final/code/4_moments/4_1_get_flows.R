@@ -10,7 +10,7 @@ library(writexl)
 library(haven)
 
 
-proj_dir <- "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/moments"
+proj_dir <- "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments"
 data_cps <- read_dta(file.path(proj_dir, "/temp/cps_basic_monthly_matched.dta"))
 
 # key functions

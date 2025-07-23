@@ -1,10 +1,11 @@
-* Set your own data and output directories
+log close _all
 
+* Set your own data and output directories
 clear all
 set more off
 
-global data_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/raw"
-global output_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/processed"
+global data_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/raw"
+global output_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/processed"
 
 preserve 
 import delimited "$data_dir/dingelneiman/onet_wfh_code.csv", clear 
@@ -474,5 +475,3 @@ keep if date_monthly >= tm(2016m1)
 * now we have our wage growth measure for each wage group {1,2,3,4} x work-from-home exposure group {low, high}
 export delimited "$output_dir/figure_2_5_temp2.csv", replace 
 restore 
-
-

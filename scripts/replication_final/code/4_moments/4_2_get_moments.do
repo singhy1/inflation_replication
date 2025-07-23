@@ -2,9 +2,9 @@
 *********************************************************
 * Micro Flows - Pre Period 
 *********************************************************
-global data_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/moments/raw"
-global temp_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/moments/temp"
-global output_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/moments/output"
+global data_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments/raw"
+global temp_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments/temp"
+global output_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments/output"
 
 use "$temp_dir/gross_flows_v1.dta", clear
 

@@ -2,7 +2,7 @@
 # Date Created: 7/11/2025
 # Last Modified: 7/11/2025
 # This Code:
-# - takes the processed data from /master/data/processed
+# - takes the processed data from /replication_final/data/processed
 # - makes figures for the main text of the paper, 
 # - except for Figure 6.1, Panel B
 # - (See at the bottom of /code/0_process_data.py)
@@ -27,7 +27,7 @@ using Revise
 const user = get(ENV, "USERNAME", get(ENV, "USER", "unknown"))
 
 if (user == "giyoung")
-    pathfolder = "/Users/giyoung/Downloads/inflation_replication/scripts/master"
+    pathfolder = "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final"
 end
 
 const pathfigures = "$pathfolder/output/figures"

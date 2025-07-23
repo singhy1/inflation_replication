@@ -2,7 +2,7 @@
 # Date Created: 7/11/2025
 # Last Modified: 7/13/2025
 # This Code:
-# - takes the processed data from /master/data/processed
+# - takes the processed data from /replication_final/data/processed
 # - creates Figure 6.1, Panel B and Table 4
 ######################################################################
 
@@ -16,7 +16,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Set directories (Set your own global path)
-global_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/master/"
+global_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/"
 data_dir = os.path.join(global_dir, "data/processed")
 figures_dir = os.path.join(global_dir, "output/figures")
 table_dir = os.path.join(global_dir, "output/tables")

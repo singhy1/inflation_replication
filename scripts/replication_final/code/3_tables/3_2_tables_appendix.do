@@ -1,9 +1,9 @@
 clear all
 set more off
 
-global data_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/raw"
-global temp_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/moments/temp"
-global output_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/output/tables"
+global data_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/raw"
+global temp_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments/temp"
+global output_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/output/tables"
 
 ******* Table B.1 ******************************************************************
 

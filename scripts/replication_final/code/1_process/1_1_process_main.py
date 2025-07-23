@@ -2,7 +2,7 @@
 # Date Created: 7/10/2025
 # Last Modified: 7/11/2025
 # This Code:
-# - takes the raw data from /master/data/raw
+# - takes the raw data from /replication_final/data/raw
 # - processes it to create Dataframes for making all figures
 # - in the main text.
 ######################################################################
@@ -18,7 +18,7 @@ from collections import defaultdict
 warnings.filterwarnings("ignore")
 
 # Set directories (Set your own global path)
-global_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/master/"
+global_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/"
 data_dir = os.path.join(global_dir, "data/raw")
 output_dir = os.path.join(global_dir, "data/processed")
 

@@ -2,7 +2,7 @@
 # Date Created: 7/13/2025
 # Last Modified: 7/13/2025
 # This Code:
-# - takes the processed data from /master/data/processed
+# - takes the processed data from /replication_final/data/processed
 # - makes the following figures: Figure B.6 and Figure B.8
 ######################################################################
 
@@ -25,7 +25,7 @@ using Revise
 const user = get(ENV, "USERNAME", get(ENV, "USER", "unknown"))
 
 if (user == "giyoung")
-    pathfolder = "/Users/giyoung/Downloads/inflation_replication/scripts/master"
+    pathfolder = "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final"
 end
 
 const pathfigures = "$pathfolder/output/figures"

@@ -4,9 +4,9 @@
 
 set more off
 
-global data_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/moments/raw"
-global temp_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/moments/temp"
-global output_dir "/Users/giyoung/Downloads/inflation_replication/scripts/master/data/moments/temp"
+global data_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments/raw"
+global temp_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments/temp"
+global output_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments/temp"
 
 * CPI Cleanings 
 import excel "$data_dir/CPI.xls", cellrange(A11) firstrow clear
@@ -30,8 +30,6 @@ bysort year: egen avg_cpi_12m_lag = mean(cpi_12m_lag)
 
 
 save "$temp_dir/cpi_clean.dta", replace
-
-cd "$data_dir/cps_00110.dat"
 
 clear
 quietly infix                  ///
@@ -66,7 +64,7 @@ quietly infix                  ///
   int     uhrsworkly  137-139  ///
   double  incwage     140-147  ///
   byte    paidhour    148-148  ///
-  using `"cps_00110.dat"'
+  using `"$data_dir/cps_00110.dat"'
 
 replace asecwth    = asecwth    / 10000
 replace asecwt     = asecwt     / 10000
@@ -254,8 +252,6 @@ save "$temp_dir/asec_workers_by_earn_decile.dta", replace
 
 * CPS Basic Monthly Data 
 
-cd "$data_dir/cps_00108.dat" 
-
 set more off
 
 clear
@@ -296,7 +292,7 @@ quietly infix                   ///
   double  earnweek     170-177  ///
   int     uhrsworkorg  178-180  ///
   byte    wksworkorg   181-182  ///
-  using `"cps_00108.dat"'
+  using `"$data_dir/cps_00108.dat"'
 
 replace hwtfinl     = hwtfinl     / 10000
 replace wtfinl      = wtfinl      / 10000
