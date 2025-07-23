@@ -18,6 +18,16 @@ JULIA_EXEC = "/Users/giyoung/.julia/juliaup/julia-1.11.6+0.aarch64.apple.darwin1
 R_EXEC = "/usr/local/bin/Rscript"  
 PYTHON = "python3" # Adjust this to "python" if you are using Python 2.x
 
+# Yash Paths 
+
+# Adjust executable paths as necessary
+STATA_EXEC = "C:/Program Files/StataNow19/StataMP-64.exe"
+JULIA_EXEC = "C:/Users/singhy/AppData/Local/Programs/Julia-1.11.2/bin/julia.exe"
+R_EXEC = "C:/Program Files/R/R-4.3.1/bin/Rscript.exe"  
+PYTHON = "C:/Users/singhy/AppData/Local/Programs/Python/Python311/python.exe" 
+
+
+
 ################################################################## 1. Main Text Figures
 ################################################################# 1-1. Process Raw Data
 print("Started processing raw data for main text figures...")
