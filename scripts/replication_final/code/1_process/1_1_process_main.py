@@ -10,6 +10,8 @@
 import numpy as np 
 import pandas as pd 
 import os
+import platform
+from pathlib import Path
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 import statsmodels.api as sm
@@ -17,10 +19,21 @@ import warnings
 from collections import defaultdict
 warnings.filterwarnings("ignore")
 
-# Set directories (Set your own global path)
-global_dir = "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/"
-data_dir = os.path.join(global_dir, "data/raw")
-output_dir = os.path.join(global_dir, "data/processed")
+# Detect OS
+is_win = platform.system() == "Windows"
+
+# Get username (cross-platform)
+user = os.environ.get("USER") or os.environ.get("USERNAME")
+
+# Define base path
+if is_win:
+    proj_dir = Path(f"C:/Users/{user}/Dropbox/Labor_Market_PT/replication/final")
+else:
+    proj_dir = Path(f"/Users/{user}/Library/CloudStorage/Dropbox/Labor_Market_PT/replication/final")
+
+# Define other paths
+data_dir = proj_dir / "data" / "raw"
+output_dir = proj_dir / "data" / "processed"
 
 ######################################################################
 # Load Raw Data

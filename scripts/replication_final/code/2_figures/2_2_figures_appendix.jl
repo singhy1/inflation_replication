@@ -22,14 +22,21 @@ using PGFPlotsX
 using Plots
 using Revise 
 
-const user = get(ENV, "USERNAME", get(ENV, "USER", "unknown"))
+# Detect if OS is Windows
+is_win = Sys.iswindows()
 
-if (user == "giyoung")
-    pathfolder = "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final"
+# Get username  
+user = get(ENV, "USER", get(ENV, "USERNAME", ""))
+
+# Define base project path
+if is_win
+    proj_dir = joinpath("C:/Users", user, "Dropbox", "Labor_Market_PT", "replication", "final")
+else
+    proj_dir = joinpath("/Users", user, "Library", "CloudStorage", "Dropbox", "Labor_Market_PT", "replication", "final")
 end
 
-const pathfigures = "$pathfolder/output/figures"
-const pathdata = "$pathfolder/data/processed"
+const pathfigures = "$proj_dir/output/figures"
+const pathdata = "$proj_dir/data/processed"
 
 # Plot Settings 
 pgfplotsx()
@@ -70,7 +77,7 @@ annotate!(p1, df.date_monthly[end]+Month(2), 1.13, text(L"\textbf{-1.5\%}", :cen
 ylims!(p1, 0.96, 1.20)
 xlims!(p1, ticks[1], ticks[end]+9)
 xticks!(ticks, labels)
-display(p1)
+# display(p1)
 savefig(p1, "$pathfigures/figure_B_6_A.pdf")
 println("Figure B.6, Panel A processed and saved.")
 
@@ -86,7 +93,7 @@ annotate!(p1, df.date_monthly[end]+Month(2), 1.13, text(L"\textbf{-4.1\%}", :cen
 ylims!(p1, 0.96, 1.20)
 xlims!(p1, ticks[1], ticks[end]+9)
 xticks!(ticks, labels)
-display(p1)
+# display(p1)
 savefig(p1, "$pathfigures/figure_B_6_B.pdf")
 println("Figure B.6, Panel B processed and saved.")
 
@@ -131,7 +138,7 @@ xticks!(tick_values, tick_labels)
 
 # Add legend and display
 plot!(legend = :topright)
-display(p1)
+# display(p1)
 
 # Save to file
 savefig(p1, "$pathfigures/figure_B_8_A.pdf")
@@ -168,7 +175,7 @@ xticks!(tick_values, tick_labels)
 
 # Add legend and display
 plot!(legend = :topright)
-display(p1)
+# display(p1)
 
 # Save to file
 savefig(p1, "$pathfigures/figure_B_8_B.pdf")
@@ -205,7 +212,7 @@ xticks!(tick_values, tick_labels)
 
 # Add legend and display
 plot!(legend = :topright)
-display(p1)
+# display(p1)
 
 # Save to file
 savefig(p1, "$pathfigures/figure_B_8_C.pdf")
@@ -258,6 +265,6 @@ ylims!(p1, 0.0, 0.14)
 xticks!(ticks, labels)
 
 # Show and save
-display(p1)
+# display(p1)
 savefig(p1, "$(pathfigures)/figure_B_14_A.pdf")
 println("Figure B.14, Panel A processed and saved.")

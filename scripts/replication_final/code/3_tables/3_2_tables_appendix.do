@@ -1,9 +1,23 @@
 clear all
 set more off
 
-global data_dir "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/data/raw"
-global temp_dir "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/data/moments/temp"
-global output_dir "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/output/tables"
+local os : environment OS
+local is_win = strpos("`os'", "Windows") > 0
+
+* Get username
+local user : environment USER
+if "`user'" == "" local user : environment USERNAME  // For Windows
+
+* Define base path depending on OS
+if `is_win' {
+    global proj_dir "C:/Users/`user'/Dropbox/Labor_Market_PT/replication/final" // Maybe different?
+}
+else {
+    global proj_dir "/Users/`user'/Library/CloudStorage/Dropbox/Labor_Market_PT/replication/final"
+}
+global data_dir = "$proj_dir/data/raw"
+global temp_dir = "$proj_dir/data/moments/temp"
+global output_dir = "$proj_dir/output/tables"
 
 ******* Table B.1 ******************************************************************
 

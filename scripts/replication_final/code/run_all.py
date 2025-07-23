@@ -1,10 +1,16 @@
 import subprocess
 import os
+import time
+
+
+# Record start time
+start_time = time.time()
+print(f"Script started at: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))}")
 
 # set the directory of this file as working directory (replication_final/code)
 # If you are using IPython, comment this line and set the working directory manually
-# os.chdir(os.path.dirname(os.path.abspath(__file__)))
-# print(f"Current working directory: {os.getcwd()}") 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+print(f"Current working directory: {os.getcwd()}") 
 
 # Adjust executable paths as necessary
 STATA_EXEC = "/Applications/StataNow/StataMP.app/Contents/MacOS/stata-mp"
@@ -55,3 +61,20 @@ subprocess.run([R_EXEC, "./4_moments/4_1_get_flows.R"], check=True)
 subprocess.run([STATA_EXEC, "-b", "do", "./4_moments/4_2_get_moments.do"], check=True)
 subprocess.run([STATA_EXEC, "-b", "do", "./4_moments/4_3_dispersion_moments.do"], check=True)
 print("Finished generating moments.")
+
+# remove all .log files
+print("Removing all STATA log files...")
+log_files = [f for f in os.listdir('.') if f.endswith('.log')]
+for log_file in log_files:
+    os.remove(log_file)
+
+# Calculate and display total running time
+end_time = time.time()
+total_time = end_time - start_time
+hours = int(total_time // 3600)
+minutes = int((total_time % 3600) // 60)
+seconds = int(total_time % 60)
+
+print(f"\nScript completed at: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(end_time))}")
+print(f"Total running time: {hours:02d}:{minutes:02d}:{seconds:02d} ({total_time:.2f} seconds)")
+print("Project replication completed successfully!")

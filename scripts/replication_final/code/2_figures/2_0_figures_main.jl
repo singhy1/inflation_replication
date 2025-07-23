@@ -24,14 +24,21 @@ using PGFPlotsX
 using Plots
 using Revise 
 
-const user = get(ENV, "USERNAME", get(ENV, "USER", "unknown"))
+# Detect if OS is Windows
+is_win = Sys.iswindows()
 
-if (user == "giyoung")
-    pathfolder = "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final"
+# Get username  
+user = get(ENV, "USER", get(ENV, "USERNAME", ""))
+
+# Define base project path
+if is_win
+    proj_dir = joinpath("C:/Users", user, "Dropbox", "Labor_Market_PT", "replication", "final")
+else
+    proj_dir = joinpath("/Users", user, "Library", "CloudStorage", "Dropbox", "Labor_Market_PT", "replication", "final")
 end
 
-const pathfigures = "$pathfolder/output/figures"
-const pathdata = "$pathfolder/data/processed"
+const pathfigures = "$proj_dir/output/figures"
+const pathdata = "$proj_dir/data/processed"
 
 # Plot Settings 
 pgfplotsx()
@@ -69,7 +76,7 @@ labels = [Dates.format(d, "yyyy-01") for d in collect(df.date_monthly[2]:Month(2
 p1 = plot(filtered_df.date_monthly, filtered_df.tightness, label = "", xrotation = 90)
 ylims!(p1, 0.0, 2.25)
 xticks!(ticks, labels)
-display(p1)
+# display(p1)
 savefig(p1, "$pathfigures/figure_1_1_A.pdf")
 println("Figure 1.1, Panel A processed and saved.")
 
@@ -99,7 +106,7 @@ annotate!(p1, df.date_monthly[98], 1.1, text(L"\textbf{-3.8\%}", :center, 24, pa
 ylims!(p1, 0.95, 1.35)
 xlims!(p1, ticks[1], ticks[end]+12)
 xticks!(ticks, labels)
-display(p1)
+# display(p1)
 
 savefig(p1, "$pathfigures/figure_1_1_B.pdf")
 println("Figure 1.1, Panel B processed and saved.")
@@ -130,7 +137,7 @@ plot!([subperiod_start_date[1], subperiod_end_date[1]], [avg_value[1], avg_value
 plot!([subperiod_start_date[2], subperiod_end_date[2]], [avg_value[2], avg_value[2]], color = 2, linestyle = :dash, label = "")
 xticks!(ticks, labels)
 ylims!(p1, 0.0, 1.8)
-display(p1)
+# display(p1)
 savefig(p1, "$pathfigures/figure_2_1_A.pdf")
 println("Figure 2.1, Panel A processed and saved.")
 
@@ -147,7 +154,7 @@ plot!([subperiod_start_date[1], subperiod_end_date[1]], [avg_value[1], avg_value
 plot!([subperiod_start_date[2], subperiod_end_date[2]], [avg_value[2], avg_value[2]], color = 2, linestyle = :dash, label = "")
 xticks!(ticks, labels)
 ylims!(p1, 0.0, 3.5)
-display(p1)
+# display(p1)
 savefig(p1, "$pathfigures/figure_2_1_B.pdf")
 println("Figure 2.1, Panel B processed and saved.")
 
@@ -165,7 +172,7 @@ plot!([subperiod_start_date[1], subperiod_end_date[1]], [avg_value[1], avg_value
 plot!([subperiod_start_date[2], subperiod_end_date[2]], [avg_value[2], avg_value[2]], color = 2, linestyle = :dash, label = "")
 xticks!(ticks, labels)
 ylims!(p1, 0.0, 8.0)
-display(p1)
+# display(p1)
 savefig(p1, "$pathfigures/figure_2_1_C.pdf")
 println("Figure 2.1, Panel C processed and saved.")
 
@@ -210,7 +217,7 @@ plot!([subperiod_start_date[2], subperiod_end_date[2]], [avg_value[2], avg_value
 ylims!(p1, 1.8, 2.7)
 yticks!(y_ticks, y_labels)  
 xticks!(tick_values, labels)
-display(p1)
+# display(p1)
 
 savefig(p1, "$pathfigures/figure_2_2_A.pdf")
 println("Figure 2.2, Panel A processed and saved.")
@@ -256,7 +263,7 @@ plot!([subperiod_start_date[1], subperiod_end_date[1]], [avg_value[1], avg_value
 plot!([subperiod_start_date[2], subperiod_end_date[2]], [avg_value[2], avg_value[2]], color = 2, linestyle = :dash, label = "")
 ylims!(p1, 15, 40)
 xticks!(tick_values, labels)
-display(p1)
+# display(p1)
 
 savefig(p1, "$pathfigures/figure_2_2_B.pdf")
 println("Figure 2.2, Panel B processed and saved.")
@@ -287,7 +294,7 @@ annotate!(p1, filtered_df.date_monthly[18], 6.5, text("Job Stayers", :left, 24, 
 annotate!(p1, filtered_df.date_monthly[17], 11., text("Job Changers", :left, 24, "black"))
 ylims!(p1, 0.0, 18.0)
 xticks!(tick_values, tick_labels)
-display(p1)
+# display(p1)
 savefig(p1, "$pathfigures/figure_2_3_A.pdf")
 println("Figure 2.3, Panel A processed and saved.")
 
@@ -300,7 +307,7 @@ p1 = scatter(df.P_12m_change, df.diff, label = "", xlabel = "Monthly Inflation R
 ylabel!(L"\parbox{15em}{\centering Monthly Difference in Wage Growth,\\ Changers vs Stayers}", labelfontsize = 24)
 xticks!(2:1:8)
 yticks!(2:1:8)
-display(p1)
+# display(p1)
 savefig(p1, "$pathfigures/figure_2_3_B.pdf")
 println("Figure 2.3, Panel B processed and saved.")
 
@@ -321,7 +328,7 @@ annotate!(p1, df.date_monthly[end]+Month(2), 1.128, text(L"\textbf{-2.4\%}", :ce
 ylims!(p1, 0.96, 1.20)
 xlims!(p1, ticks[1], ticks[end]+9)
 xticks!(ticks, labels)
-display(p1)
+# display(p1)
 savefig(p1, "$pathfigures/figure_2_4_A.pdf")
 println("Figure 2.4, Panel A processed and saved.")
 
@@ -337,7 +344,7 @@ annotate!(p1, df.date_monthly[end]+Month(2), 1.124, text(L"\textbf{-6.1\%}", :ce
 ylims!(p1, 0.96, 1.20) 
 xlims!(p1, ticks[1], ticks[end]+9)
 xticks!(ticks, labels)
-display(p1)
+# display(p1)
 savefig(p1, "$pathfigures/figure_2_4_B.pdf")
 println("Figure 2.4, Panel B processed and saved.")
 
@@ -383,7 +390,7 @@ xticks!(tick_values, tick_labels)
 
 # Add legend and display
 plot!(legend = :topright)
-display(p1)
+# display(p1)
 
 # Save to file
 savefig(p1, "$pathfigures/figure_2_5_A.pdf")
@@ -420,7 +427,7 @@ xticks!(tick_values, tick_labels)
 
 # Add legend and display
 plot!(legend = :topright)
-display(p1)
+# display(p1)
 
 # Save to file
 savefig(p1, "$pathfigures/figure_2_5_B.pdf")
@@ -457,7 +464,7 @@ xticks!(tick_values, tick_labels)
 
 # Add legend and display
 plot!(legend = :topright)
-display(p1)
+# display(p1)
 
 # Save to file
 savefig(p1, "$pathfigures/figure_2_5_C.pdf")
@@ -485,7 +492,7 @@ scatter!([filtered_df.date_monthly[221], filtered_df.date_monthly[455], filtered
 scatter!([filtered_df.date_monthly[30], filtered_df.date_monthly[270], filtered_df.date_monthly[340], filtered_df.date_monthly[860]], [1.7, 1.05, 0.95, 2.02], label = "", markershape = :circle, markersize = 20, markeralpha = 0.0, markerstrokealpha = 1.0, markerstrokecolor = 2, markerstrokewidth = 3)
 ylims!(p1, 0.0, 2.2)
 xticks!([ticks[2:5:end]; ticks[end]], [labels[2:5:end]; labels[end]])
-display(p1)
+# display(p1)
 savefig(p1, "$pathfigures/figure_6_1_A.pdf")
 println("Figure 6.1, Panel A processed and saved.")
 

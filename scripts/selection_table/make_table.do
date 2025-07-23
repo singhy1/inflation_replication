@@ -1,220 +1,77 @@
-* Yash Singh 
-* goal: take inputs from make_data, and make summary stats for switcher/stayer in pre/inflation/full post period 
+********************************************************************************
+* Define grouping variables and their corresponding display names
+********************************************************************************
+local group_vars "gengroup educ_group wagegroup racegroup"
+local group_names "Gender Education Wage Race"
 
-global proj_dir "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final"
+tempfile final_data
 
-use "$proj_dir/data/processed/make_selection_table.dta", clear 
+********************************************************************************
+* Loop through each grouping variable to process data
+********************************************************************************
+forvalues i = 1/`=wordcount("`group_vars'")' {
+    local current_var : word `i' of `group_vars'
+    local current_name : word `i' of `group_names'
 
-// * Pr(Sex | Period, Switcher)
-// preserve 
-// collapse (sum) weight = weightbls98, by(jstayergroup period gengroup)
-// gen total_weight = .
-// bysort jstayergroup period (gengroup): replace total_weight = sum(weight)
-// bysort jstayergroup period (gengroup): replace total_weight = total_weight[_N]
-// gen gender_share = weight / total_weight
-// restore 
-//
-// * Pr(Education | Period, Switcher)
-// preserve 
-// collapse (sum) weight = weightbls98, by(jstayergroup period educ_group)
-// gen total_weight = .
-// bysort jstayergroup period (educ_group): replace total_weight = sum(weight)
-// bysort jstayergroup period (educ_group): replace total_weight = total_weight[_N]
-// gen educ_share = weight / total_weight
-// restore 
-// *****************************************
-//
-//
-// * race group 
-// preserve 
-// collapse (sum) weight = weightbls98, by(jstayergroup period racegroup)
-// gen total_weight = .
-// bysort jstayergroup period (racegroup): replace total_weight = sum(weight)
-// bysort jstayergroup period (racegroup): replace total_weight = total_weight[_N]
-//
-// * Step 3: Calculate gender share
-// gen race_share = weight / total_weight
-// restore 
-//
-// * teleworkable 
-// preserve 
-// collapse (mean) telework_share = teleworkable [fw=int(weightbls98)], by(jstayergroup period)
-// restore 
-//
-// * Age 
-// preserve 
-// collapse (mean) avg_age = age [fw=int(weightbls98)], by(jstayergroup period)
-// restore 
-//
-// * wage group 
-// preserve 
-// collapse (mean) avg_wage_quartile = wagegroup_num [fw=int(weightbls98)], by(jstayergroup period)
-// restore 
+    use "$proj_dir/data/processed/make_selection_table.dta", clear
 
-****************************************************************************************
-****************************************************************************************
+    * Step 1: Aggregate to monthly shares for the current group
+    collapse (sum) weight = weightbls98, by(jstayergroup period `current_var' date_monthly)
+    gen total_weight = .
+    bysort jstayergroup period date_monthly (`current_var'): replace total_weight = sum(weight)
+    bysort jstayergroup period date_monthly (`current_var'): replace total_weight = total_weight[_N]
+    gen share = weight / total_weight // Use a generic 'share' variable name
 
-//
-// * Pr(Switch | period, education)
-// preserve 
-// collapse (sum) weight = weightbls98, by(jstayergroup period educ_group)
-//
-// gen total_group_weight = .
-// bysort period educ_group (jstayergroup): replace total_group_weight = sum(weight)
-// bysort period educ_group (jstayergroup): replace total_group_weight = total_group_weight[_N]
-//
-// gen switch_stay_share = weight / total_group_weight
-// restore 
+    * Step 2: Collapse to average share by group
+    drop if missing(period)
+    collapse (mean) share, by(jstayergroup period `current_var')
+
+    * Step 3: Construct reshape stub with ordering control
+    gen period_code = cond(period == "pre", "a_pre", ///
+                          cond(period == "inf", "b_inf", "c_post"))
+    gen group_code = cond(jstayergroup == "Job Stayer", "a_stayer", "b_switcher")
+    gen str stub = group_code + "_" + period_code
+
+    * Step 4: Prepare for reshaping
+    drop period jstayergroup period_code group_code
+
+    * Step 5: Reshape to wide format
+    reshape wide share, i(`current_var') j(stub) string
+
+    * Step 6: Rename columns and add group identifier
+    gen group = "`current_name'"
+    rename `current_var' group_val
+    order group group_val
+
+    * Step 7: Shorten wide column names
+    * This part needs to be dynamic based on 'share' prefix
+    ds share*
+    foreach var of varlist `r(varlist)' {
+        local short = subinstr("`var'", "share", "", .) // Remove 'share' prefix
+        local short = subinstr("`short'", "a_stayer_a_pre", "stayer_pre", .)
+        local short = subinstr("`short'", "a_stayer_b_inf", "stayer_inf", .)
+        local short = subinstr("`short'", "a_stayer_c_post", "stayer_post", .)
+        local short = subinstr("`short'", "b_switcher_a_pre", "switcher_pre", .)
+        local short = subinstr("`short'", "b_switcher_b_inf", "switcher_inf", .)
+        local short = subinstr("`short'", "b_switcher_c_post", "switcher_post", .)
+        rename `var' `short'
+    }
 
 
-********* Giyoung's Code *******************************************************
+    * Append to the final dataset
+    if `i' == 1 {
+        save `final_data', replace
+    } 
+	else {
+        append using `final_data'
+        save `final_data', replace
+    }
 
-use "$proj_dir/data/processed/make_selection_table.dta", clear 
+}
 
-*** Task: Check all P(Demographic | Period, Switcher) holds the same across different periods
+use `final_data', clear
 
-* 1. By Gender Group
-preserve
-collapse (sum) weight = weightbls98, by(jstayergroup period gengroup date_monthly)
-gen total_weight = .
-bysort jstayergroup period date_monthly (gengroup): replace total_weight = sum(weight)
-bysort jstayergroup period date_monthly (gengroup): replace total_weight = total_weight[_N]
-gen gender_share = weight / total_weight
-drop if missing(period) // drop 2015 and 2020
-
-gen i_inf = period == "inf"
-gen i_post = period == "post"
-
-reg gender_share i_inf i_post if jstayergroup == "Job Stayer"
-reg gender_share i_inf i_post if jstayergroup == "Job Switcher"
-restore
-
-esttab g_stayer g_switcher e_stayer e_switcher using table.tex, ///
-    keep(i_inf i_post) ///
-    label se star(* 0.1 ** 0.05 *** 0.01) ///
-    cells(b(fmt(3)) se(par fmt(3))) ///
-    nomtitle nonumber ///
-    varlabels(i_inf "Inflation" i_post "Post-Inflation") ///
-    order(i_inf i_post) ///
-    fragment ///
-    alignment(c) ///
-    replace
-
-* 2. By Education Group
-preserve
-collapse (sum) weight = weightbls98, by(jstayergroup period educ_group date_monthly)
-gen total_weight = .
-bysort jstayergroup period date_monthly (educ_group): replace total_weight = sum(weight)
-bysort jstayergroup period date_monthly (educ_group): replace total_weight = total_weight[_N]
-gen educ_share = weight / total_weight
-drop if missing(period) // drop 2015 and 2020
-
-gen i_inf = period == "inf"
-gen i_post = period == "post"
-
-reg educ_share i_inf i_post if jstayergroup == "Job Stayer"
-reg educ_share i_inf i_post if jstayergroup == "Job Switcher"
-restore
-
-* 3. By Race Group
-preserve
-collapse (sum) weight = weightbls98, by(jstayergroup period racegroup date_monthly)
-gen total_weight = .
-bysort jstayergroup period date_monthly (racegroup): replace total_weight = sum(weight)
-bysort jstayergroup period date_monthly (racegroup): replace total_weight = total_weight[_N]
-gen race_share = weight / total_weight
-drop if missing(period) // drop 2015 and 2020
-
-gen i_inf = period == "inf"
-gen i_post = period == "post"
-
-reg race_share i_inf i_post if jstayergroup == "Job Stayer"
-reg race_share i_inf i_post if jstayergroup == "Job Switcher"
-restore
-
-* By (Binarized) Teleworkable
-preserve
-gen telegroup = teleworkable > 0.5
-collapse (sum) weight = weightbls98, by(jstayergroup period telegroup date_monthly)
-gen total_weight = .
-bysort jstayergroup period date_monthly (telegroup): replace total_weight = sum(weight)
-bysort jstayergroup period date_monthly (telegroup): replace total_weight = total_weight[_N]
-gen tele_share = weight / total_weight
-drop if missing(period) // drop 2015 and 2020
-
-gen i_inf = period == "inf"
-gen i_post = period == "post"
-
-reg tele_share i_inf i_post if jstayergroup == "Job Stayer"
-reg tele_share i_inf i_post if jstayergroup == "Job Switcher"
-restore
-
-* By Age
-preserve
-collapse (sum) weight = weightbls98, by(jstayergroup period age date_monthly)
-gen total_weight = .
-bysort jstayergroup period date_monthly (age): replace total_weight = sum(weight)
-bysort jstayergroup period date_monthly (age): replace total_weight = total_weight[_N]
-gen age_share = weight / total_weight
-drop if missing(period) // drop 2015 and 2020
-
-gen i_inf = period == "inf"
-gen i_post = period == "post"
-
-reg age_share i_inf i_post if jstayergroup == "Job Stayer"
-reg age_share i_inf i_post if jstayergroup == "Job Switcher"
-restore
-
-* By Age Group 
-preserve
-gen age_group = .
-replace age_group = 1 if inrange(age, 16, 24)
-replace age_group = 2 if inrange(age, 25, 34)
-replace age_group = 3 if inrange(age, 35, 44)
-replace age_group = 4 if inrange(age, 45, 54)
-replace age_group = 5 if age >= 55
-
-collapse (sum) weight = weightbls98, by(jstayergroup period age_group date_monthly)
-gen total_weight = .
-bysort jstayergroup period date_monthly (age_group): replace total_weight = sum(weight)
-bysort jstayergroup period date_monthly (age_group): replace total_weight = total_weight[_N]
-gen age_group_share = weight / total_weight
-drop if missing(period) // drop 2015 and 2020
-
-gen i_inf = period == "inf"
-gen i_post = period == "post"
-
-reg age_group_share i_inf i_post if jstayergroup == "Job Stayer"
-reg age_group_share i_inf i_post if jstayergroup == "Job Switcher"
-restore
-
-* By Wage Group
-preserve
-collapse (sum) weight = weightbls98, by(jstayergroup period wagegroup date_monthly)
-gen total_weight = .
-bysort jstayergroup period date_monthly (wagegroup): replace total_weight = sum(weight)
-bysort jstayergroup period date_monthly (wagegroup): replace total_weight = total_weight[_N]
-gen wage_share = weight / total_weight
-drop if missing(period) // drop 2015 and 2020
-
-gen i_inf = period == "inf"
-gen i_post = period == "post"
-
-reg wage_share i_inf i_post if jstayergroup == "Job Stayer"
-reg wage_share i_inf i_post if jstayergroup == "Job Switcher"
-restore
-
-
-
-
-
-
-
-
-
-
-
-
-
+* Display final result (optional)
+list
 
 
