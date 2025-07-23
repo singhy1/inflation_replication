@@ -25,7 +25,7 @@ using Revise
 const user = get(ENV, "USERNAME", get(ENV, "USER", "unknown"))
 
 if (user == "giyoung")
-    pathfolder = "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final"
+    pathfolder = "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final"
 end
 
 const pathfigures = "$pathfolder/output/figures"

@@ -1,8 +1,8 @@
 clear all
 set more off
 
-global data_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/raw"
-global output_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/processed"
+global data_dir "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/data/raw"
+global output_dir "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/data/processed"
 
 ******* Figure B.5, Panel B, C ******************************************************
 

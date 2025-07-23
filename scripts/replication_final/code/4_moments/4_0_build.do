@@ -4,9 +4,9 @@
 
 set more off
 
-global data_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments/raw"
-global temp_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments/temp"
-global output_dir "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments/temp"
+global data_dir "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/data/moments/raw"
+global temp_dir "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/data/moments/temp"
+global output_dir "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/data/moments/temp"
 
 * CPI Cleanings 
 import excel "$data_dir/CPI.xls", cellrange(A11) firstrow clear
@@ -209,6 +209,8 @@ gen real_wkly_earn = (weekly_earnings / avg_cpi_12m_lag ) * `price_index_q1_2019
 gen final_wgt = int(ASECWT)
 
 keep YEAR MONTH CPSIDP final_wgt real_wkly_earn 
+
+quietly ssc install egenmore
 
 *** WEEKLY EARNINGS **** 
 preserve 

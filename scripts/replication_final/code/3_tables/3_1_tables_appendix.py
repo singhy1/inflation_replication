@@ -15,7 +15,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Set directories (Set your own global path)
-global_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/"
+global_dir = "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/"
 data_dir = os.path.join(global_dir, "data/raw")
 data_processed_dir = os.path.join(global_dir, "data/processed")
 figures_dir = os.path.join(global_dir, "output/figures")

@@ -8,7 +8,7 @@ print(f"Current working directory: {os.getcwd()}")
 
 # Adjust executable paths as necessary
 STATA_EXEC = "/Applications/StataNow/StataMP.app/Contents/MacOS/stata-mp"
-JULIA_EXEC = "/Applications/Julia-1.11.app/Contents/Resources/julia/bin/julia" 
+JULIA_EXEC = "/Users/giyoung/.julia/juliaup/julia-1.11.6+0.aarch64.apple.darwin14/bin/julia"
 R_EXEC = "/usr/local/bin/Rscript"  
 PYTHON = "python3" # Adjust this to "python" if you are using Python 2.x
 

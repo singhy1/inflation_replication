@@ -2,15 +2,23 @@
 # 4/30/24 
 # this script generates a file with all job flows by income deciles. 
 
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+required_packages <- c("ipumsr", "tidyverse", "ggplot2", "writexl", "haven")
 
-library(ipumsr)
-library(tidyverse)
-library(ggplot2)
-library(writexl) 
-library(haven)
+installed <- rownames(installed.packages())
 
+for (pkg in required_packages) {
+  if (!(pkg %in% installed)) {
+    suppressMessages(
+      suppressWarnings(
+        install.packages(pkg, quietly = TRUE)
+      )
+    )
+  }
+  suppressMessages(library(pkg, character.only = TRUE))
+}
 
-proj_dir <- "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/moments"
+proj_dir <- "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/data/moments"
 data_cps <- read_dta(file.path(proj_dir, "/temp/cps_basic_monthly_matched.dta"))
 
 # key functions
@@ -439,6 +447,8 @@ for (year in years) {
     ))
   }
 }
+
+
 
 transition_rates$Date <- as.Date(paste(transition_rates$Year, transition_rates$Month, "01", sep = "-"))
 

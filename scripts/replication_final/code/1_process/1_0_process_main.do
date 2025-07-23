@@ -4,8 +4,8 @@ log close _all
 clear all
 set more off
 
-global data_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/raw"
-global output_dir = "/Users/giyoung/Downloads/inflation_replication/scripts/replication_final/data/processed"
+global data_dir = "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/data/raw"
+global output_dir = "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/data/processed"
 
 preserve 
 import delimited "$data_dir/dingelneiman/onet_wfh_code.csv", clear 
