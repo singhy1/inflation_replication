@@ -1,0 +1,384 @@
+* Yash Singh 
+* goal: take inputs from make_data, and make summary stats for switcher/stayer in pre/inflation/full post period 
+
+global proj_dir "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final"
+
+use "$proj_dir/data/processed/make_selection_table.dta", clear 
+
+// * Pr(Sex | Period, Switcher)
+// preserve 
+// collapse (sum) weight = weightbls98, by(jstayergroup period gengroup)
+// gen total_weight = .
+// bysort jstayergroup period (gengroup): replace total_weight = sum(weight)
+// bysort jstayergroup period (gengroup): replace total_weight = total_weight[_N]
+// gen gender_share = weight / total_weight
+// restore 
+//
+// * Pr(Education | Period, Switcher)
+// preserve 
+// collapse (sum) weight = weightbls98, by(jstayergroup period educ_group)
+// gen total_weight = .
+// bysort jstayergroup period (educ_group): replace total_weight = sum(weight)
+// bysort jstayergroup period (educ_group): replace total_weight = total_weight[_N]
+// gen educ_share = weight / total_weight
+// restore 
+// *****************************************
+//
+//
+// * race group 
+// preserve 
+// collapse (sum) weight = weightbls98, by(jstayergroup period racegroup)
+// gen total_weight = .
+// bysort jstayergroup period (racegroup): replace total_weight = sum(weight)
+// bysort jstayergroup period (racegroup): replace total_weight = total_weight[_N]
+//
+// * Step 3: Calculate gender share
+// gen race_share = weight / total_weight
+// restore 
+//
+// * teleworkable 
+// preserve 
+// collapse (mean) telework_share = teleworkable [fw=int(weightbls98)], by(jstayergroup period)
+// restore 
+//
+// * Age 
+// preserve 
+// collapse (mean) avg_age = age [fw=int(weightbls98)], by(jstayergroup period)
+// restore 
+//
+// * wage group 
+// preserve 
+// collapse (mean) avg_wage_quartile = wagegroup_num [fw=int(weightbls98)], by(jstayergroup period)
+// restore 
+
+****************************************************************************************
+****************************************************************************************
+
+//
+// * Pr(Switch | period, education)
+// preserve 
+// collapse (sum) weight = weightbls98, by(jstayergroup period educ_group)
+//
+// gen total_group_weight = .
+// bysort period educ_group (jstayergroup): replace total_group_weight = sum(weight)
+// bysort period educ_group (jstayergroup): replace total_group_weight = total_group_weight[_N]
+//
+// gen switch_stay_share = weight / total_group_weight
+// restore 
+
+
+********* Giyoung's Code *******************************************************
+
+use "$proj_dir/data/processed/make_selection_table.dta", clear 
+
+*** Task: Check all P(Demographic | Period, Switcher) holds the same across different periods
+
+* 1. By Gender Group
+preserve
+collapse (sum) weight = weightbls98, by(jstayergroup period gengroup date_monthly)
+gen total_weight = .
+bysort jstayergroup period date_monthly (gengroup): replace total_weight = sum(weight)
+bysort jstayergroup period date_monthly (gengroup): replace total_weight = total_weight[_N]
+gen gender_share = weight / total_weight
+drop if missing(period)
+
+gen i_inf = period == "inf"
+gen i_post = period == "post"
+
+reg gender_share i_inf i_post if jstayergroup == "Job Stayer"
+est store g_stayer
+
+reg gender_share i_inf i_post if jstayergroup == "Job Switcher"
+est store g_switcher
+restore
+
+* 2. By Education Group
+preserve
+collapse (sum) weight = weightbls98, by(jstayergroup period educ_group date_monthly)
+gen total_weight = .
+bysort jstayergroup period date_monthly (educ_group): replace total_weight = sum(weight)
+bysort jstayergroup period date_monthly (educ_group): replace total_weight = total_weight[_N]
+gen educ_share = weight / total_weight
+drop if missing(period)
+
+gen i_inf = period == "inf"
+gen i_post = period == "post"
+
+reg educ_share i_inf i_post if jstayergroup == "Job Stayer"
+est store e_stayer
+
+reg educ_share i_inf i_post if jstayergroup == "Job Switcher"
+est store e_switcher
+restore
+
+* 3. By Race Group
+preserve
+collapse (sum) weight = weightbls98, by(jstayergroup period racegroup date_monthly)
+gen total_weight = .
+bysort jstayergroup period date_monthly (racegroup): replace total_weight = sum(weight)
+bysort jstayergroup period date_monthly (racegroup): replace total_weight = total_weight[_N]
+gen race_share = weight / total_weight
+drop if missing(period)
+
+gen i_inf = period == "inf"
+gen i_post = period == "post"
+
+reg race_share i_inf i_post if jstayergroup == "Job Stayer"
+est store r_stayer
+reg race_share i_inf i_post if jstayergroup == "Job Switcher"
+est store r_switcher
+restore
+
+* 4. By Age Group
+preserve
+gen age_group = .
+replace age_group = 1 if inrange(age, 16, 24)
+replace age_group = 2 if inrange(age, 25, 34)
+replace age_group = 3 if inrange(age, 35, 44)
+replace age_group = 4 if inrange(age, 45, 54)
+replace age_group = 5 if age >= 55
+
+collapse (sum) weight = weightbls98, by(jstayergroup period age_group date_monthly)
+gen total_weight = .
+bysort jstayergroup period date_monthly (age_group): replace total_weight = sum(weight)
+bysort jstayergroup period date_monthly (age_group): replace total_weight = total_weight[_N]
+gen age_group_share = weight / total_weight
+drop if missing(period)
+
+gen i_inf = period == "inf"
+gen i_post = period == "post"
+
+reg age_group_share i_inf i_post if jstayergroup == "Job Stayer"
+est store a_stayer
+reg age_group_share i_inf i_post if jstayergroup == "Job Switcher"
+est store a_switcher
+restore
+
+* 5. By Wage Group
+preserve
+collapse (sum) weight = weightbls98, by(jstayergroup period wagegroup date_monthly)
+gen total_weight = .
+bysort jstayergroup period date_monthly (wagegroup): replace total_weight = sum(weight)
+bysort jstayergroup period date_monthly (wagegroup): replace total_weight = total_weight[_N]
+gen wage_share = weight / total_weight
+drop if missing(period)
+
+gen i_inf = period == "inf"
+gen i_post = period == "post"
+
+reg wage_share i_inf i_post if jstayergroup == "Job Stayer"
+est store w_stayer
+reg wage_share i_inf i_post if jstayergroup == "Job Switcher"
+est store w_switcher
+restore
+
+esttab g_stayer g_switcher ///
+       e_stayer e_switcher ///
+       r_stayer r_switcher ///
+       a_stayer a_switcher ///
+       w_stayer w_switcher ///
+       using "$proj_dir/group_composition_table.tex", replace ///
+       keep(i_inf i_post) ///
+       label se star(* 0.1 ** 0.05 *** 0.01) ///
+       cells(b(fmt(3)) se(par fmt(3))) ///
+       nomtitle nonumber ///
+       varlabels(i_inf "Inflation" i_post "Post-Inflation") ///
+       order(i_inf i_post) ///
+       fragment ///
+       alignment(c) ///
+       booktabs
+
+// * By (Binarized) Teleworkable
+// preserve
+// gen telegroup = teleworkable > 0.5
+// collapse (sum) weight = weightbls98, by(jstayergroup period telegroup date_monthly)
+// gen total_weight = .
+// bysort jstayergroup period date_monthly (telegroup): replace total_weight = sum(weight)
+// bysort jstayergroup period date_monthly (telegroup): replace total_weight = total_weight[_N]
+// gen tele_share = weight / total_weight
+// drop if missing(period) // drop 2015 and 2020
+//
+// gen i_inf = period == "inf"
+// gen i_post = period == "post"
+//
+// reg tele_share i_inf i_post if jstayergroup == "Job Stayer"
+// reg tele_share i_inf i_post if jstayergroup == "Job Switcher"
+// restore
+//
+// * By Age
+// preserve
+// collapse (sum) weight = weightbls98, by(jstayergroup period age date_monthly)
+// gen total_weight = .
+// bysort jstayergroup period date_monthly (age): replace total_weight = sum(weight)
+// bysort jstayergroup period date_monthly (age): replace total_weight = total_weight[_N]
+// gen age_share = weight / total_weight
+// drop if missing(period) // drop 2015 and 2020
+//
+// gen i_inf = period == "inf"
+// gen i_post = period == "post"
+//
+// reg age_share i_inf i_post if jstayergroup == "Job Stayer"
+// reg age_share i_inf i_post if jstayergroup == "Job Switcher"
+// restore
+
+use "$proj_dir/data/processed/make_selection_table.dta", clear 
+
+*** Task: Check all P(Demographic | Period, Switcher) holds the same across different periods
+*** Restructured to have groups as rows and switcher x period as columns
+
+use "$proj_dir/data/processed/make_selection_table.dta", clear 
+
+*** Task: Check all P(Demographic | Period, Switcher) holds the same across different periods
+*** Restructured to have 4 columns and panels for each demographic group
+
+* 1. By Gender Group
+preserve
+collapse (sum) weight = weightbls98, by(jstayergroup period gengroup date_monthly)
+gen total_weight = .
+bysort jstayergroup period date_monthly (gengroup): replace total_weight = sum(weight)
+bysort jstayergroup period date_monthly (gengroup): replace total_weight = total_weight[_N]
+gen gender_share = weight / total_weight
+drop if missing(period)
+
+gen i_inf = period == "inf"
+gen i_post = period == "post"
+
+reg gender_share i_inf i_post if jstayergroup == "Job Stayer"
+est store g_stayer
+reg gender_share i_inf i_post if jstayergroup == "Job Switcher"
+est store g_switcher
+restore
+
+* 2. By Education Group
+preserve
+collapse (sum) weight = weightbls98, by(jstayergroup period educ_group date_monthly)
+gen total_weight = .
+bysort jstayergroup period date_monthly (educ_group): replace total_weight = sum(weight)
+bysort jstayergroup period date_monthly (educ_group): replace total_weight = total_weight[_N]
+gen educ_share = weight / total_weight
+drop if missing(period)
+
+gen i_inf = period == "inf"
+gen i_post = period == "post"
+
+reg educ_share i_inf i_post if jstayergroup == "Job Stayer"
+est store e_stayer
+reg educ_share i_inf i_post if jstayergroup == "Job Switcher"
+est store e_switcher
+restore
+
+* 3. By Race Group
+preserve
+collapse (sum) weight = weightbls98, by(jstayergroup period racegroup date_monthly)
+gen total_weight = .
+bysort jstayergroup period date_monthly (racegroup): replace total_weight = sum(weight)
+bysort jstayergroup period date_monthly (racegroup): replace total_weight = total_weight[_N]
+gen race_share = weight / total_weight
+drop if missing(period)
+
+gen i_inf = period == "inf"
+gen i_post = period == "post"
+
+reg race_share i_inf i_post if jstayergroup == "Job Stayer"
+est store r_stayer
+reg race_share i_inf i_post if jstayergroup == "Job Switcher"
+est store r_switcher
+restore
+
+* 4. By Age Group
+preserve
+gen age_group = .
+replace age_group = 1 if inrange(age, 16, 24)
+replace age_group = 2 if inrange(age, 25, 34)
+replace age_group = 3 if inrange(age, 35, 44)
+replace age_group = 4 if inrange(age, 45, 54)
+replace age_group = 5 if age >= 55
+
+collapse (sum) weight = weightbls98, by(jstayergroup period age_group date_monthly)
+gen total_weight = .
+bysort jstayergroup period date_monthly (age_group): replace total_weight = sum(weight)
+bysort jstayergroup period date_monthly (age_group): replace total_weight = total_weight[_N]
+gen age_group_share = weight / total_weight
+drop if missing(period)
+
+gen i_inf = period == "inf"
+gen i_post = period == "post"
+
+reg age_group_share i_inf i_post if jstayergroup == "Job Stayer"
+est store a_stayer
+reg age_group_share i_inf i_post if jstayergroup == "Job Switcher"
+est store a_switcher
+restore
+
+* 5. By Wage Group
+preserve
+collapse (sum) weight = weightbls98, by(jstayergroup period wagegroup date_monthly)
+gen total_weight = .
+bysort jstayergroup period date_monthly (wagegroup): replace total_weight = sum(weight)
+bysort jstayergroup period date_monthly (wagegroup): replace total_weight = total_weight[_N]
+gen wage_share = weight / total_weight
+drop if missing(period)
+
+gen i_inf = period == "inf"
+gen i_post = period == "post"
+
+reg wage_share i_inf i_post if jstayergroup == "Job Stayer"
+est store w_stayer
+reg wage_share i_inf i_post if jstayergroup == "Job Switcher"
+est store w_switcher
+restore
+
+* Create panel-style table with manual construction
+* Note: This creates the base structure - you'll need to manually format into panels
+
+* Write file header
+file open f using "$proj_dir/demographic_composition_panel_table.tex", write replace
+
+file write f "\begin{table}[htbp]" _n
+file write f "\centering" _n
+file write f "\label{tab:demographic_stability}" _n
+file write f "\begin{tabular}{l*{4}{c}}" _n
+file write f "\toprule" _n
+file write f "Group & \multicolumn{2}{c}{Job Stayer} & \multicolumn{2}{c}{Job Switcher} \\" _n
+file write f "\cmidrule(lr){2-3}\cmidrule(lr){4-5}" _n
+file write f " & Inflation & Post-Inflation & Inflation & Post-Inflation \\" _n
+file write f "\midrule" _n
+
+local panels        "g e r a w"
+local panel_names   `"Gender" "Education" "Race" "Age" "Wage"'
+
+forvalues i = 1/5 {
+    local panel : word `i' of `panels'
+    local name  : word `i' of `panel_names'
+
+    est restore `panel'_stayer
+    local b1  = string(_b[i_inf], "%9.3f")
+    local se1 = string(_se[i_inf], "%9.3f")
+    local b2  = string(_b[i_post], "%9.3f")
+    local se2 = string(_se[i_post], "%9.3f")
+
+    est restore `panel'_switcher
+    local b3  = string(_b[i_inf], "%9.3f")
+    local se3 = string(_se[i_inf], "%9.3f")
+    local b4  = string(_b[i_post], "%9.3f")
+    local se4 = string(_se[i_post], "%9.3f")
+
+    // Row 1: Coefficients
+    file write f `"`name' & `b1' & `b2' & `b3' & `b4' \\"' _n
+
+    // Row 2: Standard errors in parentheses, with blank group column
+    file write f `" & (`se1') & (`se2') & (`se3') & (`se4') \\"' _n
+
+    if `i' < 5 {
+        file write f "\midrule" _n
+    }
+}
+
+file write f "\bottomrule" _n
+file write f "\end{tabular}" _n
+file write f "\vspace{0.5em}" _n
+file write f "\begin{minipage}{0.95\linewidth}" _n
+file write f "\small \textit{Note:} The baseline period is the pre-inflation period. Each cell reports the change in demographic group share relative to this baseline. Standard errors are in parentheses." _n
+file write f "\end{minipage}" _n
+file write f "\end{table}" _n
+file close f

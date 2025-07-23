@@ -18,8 +18,26 @@ for (pkg in required_packages) {
   suppressMessages(library(pkg, character.only = TRUE))
 }
 
-proj_dir <- "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final/data/moments"
-data_cps <- read_dta(file.path(proj_dir, "/temp/cps_basic_monthly_matched.dta"))
+os_type <- Sys.info()[["sysname"]]
+user <- Sys.getenv("USER")
+if (user == "") {
+  user <- Sys.getenv("USERNAME")  # For Windows fallback
+}
+
+# Construct Dropbox base path
+if (os_type == "Windows") {
+  base_path <- file.path("C:/Users", user, "Dropbox", "Labor_Market_PT", "replication", "final")
+} else {
+  base_path <- file.path("/Users", user, "Library", "CloudStorage", "Dropbox", "Labor_Market_PT", "replication", "final")
+}
+
+# Final project directory
+proj_dir <- base_path  # Or append subfolders if needed
+# e.g., file.path(base_path, "data", "moments")
+
+# Normalize the path
+proj_dir <- normalizePath(proj_dir, winslash = "/", mustWork = FALSE)
+data_cps <- read_dta(file.path(proj_dir, "data/moments/temp/cps_basic_monthly_matched.dta"))
 
 # key functions
 
@@ -452,5 +470,5 @@ for (year in years) {
 
 transition_rates$Date <- as.Date(paste(transition_rates$Year, transition_rates$Month, "01", sep = "-"))
 
-write_dta(transition_rates, file.path(proj_dir, "/temp/gross_flows_v1.dta"))
+write_dta(transition_rates, file.path(proj_dir, "data/moments/temp/gross_flows_v1.dta"))
 

@@ -3,8 +3,8 @@ import os
 
 # set the directory of this file as working directory (replication_final/code)
 # If you are using IPython, comment this line and set the working directory manually
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-print(f"Current working directory: {os.getcwd()}") 
+# os.chdir(os.path.dirname(os.path.abspath(__file__)))
+# print(f"Current working directory: {os.getcwd()}") 
 
 # Adjust executable paths as necessary
 STATA_EXEC = "/Applications/StataNow/StataMP.app/Contents/MacOS/stata-mp"

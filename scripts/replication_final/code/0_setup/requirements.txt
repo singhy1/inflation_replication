@@ -4,3 +4,4 @@ matplotlib>=3.10.3
 scikit-learn>=1.7.0
 statsmodels>=0.14.5
 openpyxl>=3.1.5
+jinja2>=3.1.4

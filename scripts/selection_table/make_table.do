@@ -1,75 +1,75 @@
 * Yash Singh 
 * goal: take inputs from make_data, and make summary stats for switcher/stayer in pre/inflation/full post period 
 
-global proj_dir "C:/Users/singhy/Dropbox/Labor_Market_PT/replication/empirical" 
+global proj_dir "/Users/giyoung/Desktop/inflation_replication/scripts/replication_final"
 
-use "$proj_dir/temp/atl_cps_matched_dingel_neiman.dta", clear 
+use "$proj_dir/data/processed/make_selection_table.dta", clear 
 
-* Pr(Sex | Period, Switcher)
-preserve 
-collapse (sum) weight = weightbls98, by(jstayergroup period gengroup)
-gen total_weight = .
-bysort jstayergroup period (gengroup): replace total_weight = sum(weight)
-bysort jstayergroup period (gengroup): replace total_weight = total_weight[_N]
-gen gender_share = weight / total_weight
-restore 
-
-* Pr(Education | Period, Switcher)
-preserve 
-collapse (sum) weight = weightbls98, by(jstayergroup period educ_group)
-gen total_weight = .
-bysort jstayergroup period (educ_group): replace total_weight = sum(weight)
-bysort jstayergroup period (educ_group): replace total_weight = total_weight[_N]
-gen educ_share = weight / total_weight
-restore 
-*****************************************
-
-
-* race group 
-preserve 
-collapse (sum) weight = weightbls98, by(jstayergroup period racegroup)
-gen total_weight = .
-bysort jstayergroup period (racegroup): replace total_weight = sum(weight)
-bysort jstayergroup period (racegroup): replace total_weight = total_weight[_N]
-
-* Step 3: Calculate gender share
-gen race_share = weight / total_weight
-restore 
-
-* teleworkable 
-preserve 
-collapse (mean) telework_share = teleworkable [fw=int(weightbls98)], by(jstayergroup period)
-restore 
-
-* Age 
-preserve 
-collapse (mean) avg_age = age [fw=int(weightbls98)], by(jstayergroup period)
-restore 
-
-* wage group 
-preserve 
-collapse (mean) avg_wage_quartile = wagegroup_num [fw=int(weightbls98)], by(jstayergroup period)
-restore 
+// * Pr(Sex | Period, Switcher)
+// preserve 
+// collapse (sum) weight = weightbls98, by(jstayergroup period gengroup)
+// gen total_weight = .
+// bysort jstayergroup period (gengroup): replace total_weight = sum(weight)
+// bysort jstayergroup period (gengroup): replace total_weight = total_weight[_N]
+// gen gender_share = weight / total_weight
+// restore 
+//
+// * Pr(Education | Period, Switcher)
+// preserve 
+// collapse (sum) weight = weightbls98, by(jstayergroup period educ_group)
+// gen total_weight = .
+// bysort jstayergroup period (educ_group): replace total_weight = sum(weight)
+// bysort jstayergroup period (educ_group): replace total_weight = total_weight[_N]
+// gen educ_share = weight / total_weight
+// restore 
+// *****************************************
+//
+//
+// * race group 
+// preserve 
+// collapse (sum) weight = weightbls98, by(jstayergroup period racegroup)
+// gen total_weight = .
+// bysort jstayergroup period (racegroup): replace total_weight = sum(weight)
+// bysort jstayergroup period (racegroup): replace total_weight = total_weight[_N]
+//
+// * Step 3: Calculate gender share
+// gen race_share = weight / total_weight
+// restore 
+//
+// * teleworkable 
+// preserve 
+// collapse (mean) telework_share = teleworkable [fw=int(weightbls98)], by(jstayergroup period)
+// restore 
+//
+// * Age 
+// preserve 
+// collapse (mean) avg_age = age [fw=int(weightbls98)], by(jstayergroup period)
+// restore 
+//
+// * wage group 
+// preserve 
+// collapse (mean) avg_wage_quartile = wagegroup_num [fw=int(weightbls98)], by(jstayergroup period)
+// restore 
 
 ****************************************************************************************
 ****************************************************************************************
 
-
-* Pr(Switch | period, education)
-preserve 
-collapse (sum) weight = weightbls98, by(jstayergroup period educ_group)
-
-gen total_group_weight = .
-bysort period educ_group (jstayergroup): replace total_group_weight = sum(weight)
-bysort period educ_group (jstayergroup): replace total_group_weight = total_group_weight[_N]
-
-gen switch_stay_share = weight / total_group_weight
-restore 
+//
+// * Pr(Switch | period, education)
+// preserve 
+// collapse (sum) weight = weightbls98, by(jstayergroup period educ_group)
+//
+// gen total_group_weight = .
+// bysort period educ_group (jstayergroup): replace total_group_weight = sum(weight)
+// bysort period educ_group (jstayergroup): replace total_group_weight = total_group_weight[_N]
+//
+// gen switch_stay_share = weight / total_group_weight
+// restore 
 
 
 ********* Giyoung's Code *******************************************************
 
-use "$proj_dir/temp/atl_cps_matched_dingel_neiman.dta", clear 
+use "$proj_dir/data/processed/make_selection_table.dta", clear 
 
 *** Task: Check all P(Demographic | Period, Switcher) holds the same across different periods
 
@@ -88,6 +88,17 @@ gen i_post = period == "post"
 reg gender_share i_inf i_post if jstayergroup == "Job Stayer"
 reg gender_share i_inf i_post if jstayergroup == "Job Switcher"
 restore
+
+esttab g_stayer g_switcher e_stayer e_switcher using table.tex, ///
+    keep(i_inf i_post) ///
+    label se star(* 0.1 ** 0.05 *** 0.01) ///
+    cells(b(fmt(3)) se(par fmt(3))) ///
+    nomtitle nonumber ///
+    varlabels(i_inf "Inflation" i_post "Post-Inflation") ///
+    order(i_inf i_post) ///
+    fragment ///
+    alignment(c) ///
+    replace
 
 * 2. By Education Group
 preserve
@@ -192,5 +203,18 @@ gen i_post = period == "post"
 reg wage_share i_inf i_post if jstayergroup == "Job Stayer"
 reg wage_share i_inf i_post if jstayergroup == "Job Switcher"
 restore
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

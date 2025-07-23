@@ -370,7 +370,7 @@ replace oes_occ_code = "51-9121" if occ_lbl == "Painting workers 51-9120"
 // 51-9122	Painters, Transportation Equipment	0
 // 51-9123	Painting, Coating, and Decorating Workers	1
 
-merge m:1 oes_occ_code using `onet_temp'
+merge m:1 oes_occ_code using "$proj_dir/temp/onet_teleworkable_blscodes.dta"
 
 
 
@@ -389,4 +389,4 @@ replace period = "pre"  if pre_period == 1
 replace period = "inf"  if inf_period == 1
 replace period = "post" if post_period == 1
 
-save "$proj_dir/data/processed/make_selection_table.dta", replace 
+save "$proj_dir/temp/atl_cps_matched_dingel_neiman.dta", replace 
