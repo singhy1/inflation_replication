@@ -1,12 +1,24 @@
-######################################################################
-# Date Created: 7/11/2025
-# Last Modified: 7/11/2025
-# This Code:
-# - takes the processed data from /replication_final/data/processed
-# - makes figures for the main text of the paper, 
-# - except for Figure 6.1, Panel B
-# - (See at the bottom of /code/0_process_data.py)
-######################################################################
+################################################################################
+# FIGURE GENERATION - MAIN TEXT FIGURES (JULIA)
+# 
+# Purpose: Generate figures for main text
+# 
+# Description:
+#   - Takes processed data from /replication_final/data/processed
+#   - Generates all main text figures except Figure 6.1 Panel B
+#   - Outputs PDF figures to /replication_final/output/figures
+#
+# Figures Generated:
+#   - Figure 1.1, Panel A/B: Vacancy-to-Unemployment Rate, CPI and Real Wages Over Time
+#   - Figure 2.1, Panel A/B/C: Layoff Rate, Quit Rate and Job Opening Rate 2016-2024, JOLTS Data
+#   - Figure 2.2, Panel A/B: E-E and U-E Flows 2016-2024, CPS Data
+#   - Figure 2.3, Panel A/B: Nominal Wage Growth 2020-2024, Job-Changers and Job-Stayers
+#   - Figure 2.4, Panel A/B/C: % Deviations from trend in Real Wages by Occupation Type
+#   - Figure 6.1, Panel A: V/U Rate Over Time
+#
+# Author: Yash Singh, Giyoung Kwon
+# Last Updated: 2025/7/28
+################################################################################
 
 using Statistics
 using Binscatters

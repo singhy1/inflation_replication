@@ -1,9 +1,20 @@
-######################################################################
-# Last Modified: 7/21/2025
-# This Code:
-# - takes data from /replication_final/data/processed and /replication_final/data/raw
-# - makes figures for the appendix 
-######################################################################
+################################################################################
+# TABLE GENERATION - APPENDIX TABLES (PYTHON)
+# 
+# Purpose: Generate tables for appendix
+#
+# Description:
+#   - Takes data from /replication_final/data/processed
+#   - Creates formatted tables for appendix
+#   - Outputs LaTeX-formatted tables to /replication_final/output/tables
+#
+# Tables Generated:
+#   - Table B.3: Sectoral Labor Market Flows and Wages During Inflation Period
+#   - Table B.4: Subjective Well-Being by Income Group Pre- and Post-Pandemic, Gallup Data
+#
+# Author: Yash Singh, Giyoung Kwon
+# Last Updated: 2025/7/28
+################################################################################
 
 import numpy as np 
 import pandas as pd 

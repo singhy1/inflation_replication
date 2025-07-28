@@ -10,7 +10,7 @@
 # 4. Alternatively, copy and paste the code below into your R console
 
 cat("Setting up R environment for replication study...\n")
-cat("=" %R% strrep("=", 59), "\n")
+cat(paste0("=", strrep("=", 59)), "\n")
 
 # Set CRAN mirror for package installation
 options(repos = c(CRAN = "https://cloud.r-project.org"))
@@ -26,7 +26,7 @@ required_packages <- c(
   "ipumsr",         # For working with IPUMS data
   
   # Plotting and visualization
-  "ggplot2",        # Already included in tidyverse, but listing explicitly
+  "ggplot2"      # Already included in tidyverse, but listing explicitly
   
   # Base R packages (usually pre-installed)
   # stats, utils, base are part of base R
@@ -70,7 +70,7 @@ for (pkg in required_packages) {
   })
 }
 
-cat("\n" %R% strrep("=", 60), "\n")
+cat(paste0("\n", strrep("=", 60)), "\n")
 cat("R package setup completed!\n")
 cat("\nIf you encounter any issues:\n")
 cat("1. Make sure you have R 4.0+ installed\n")

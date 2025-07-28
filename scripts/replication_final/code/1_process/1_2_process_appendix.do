@@ -1,50 +1,86 @@
+********************************************************************************
+* DATA PROCESSING - APPENDIX FIGURES (STATA)
+* 
+* Purpose: Process raw data to create clean datasets for appendix figures
+* 
+* Description:
+*   - Takes raw data from /replication_final/data/raw
+*   - Creates processed datasets for appendix figures and tables
+*   - Outputs to /replication_final/data/processed
+*
+* Generated Processed Datasets:
+*   - figure_B_5_B_C.csv
+*   - figure_B_8_temp1.csv
+*   - figure_B_8_temp2.csv
+*   - table_B_2.dta
+*
+* Author: Yash Singh, Giyoung Kwon
+* Last Updated: 2025/7/28
+********************************************************************************
+
+* Clear environment and set up
 clear all
 set more off
 
+
+********************************************************************************
+* SETUP: CONFIGURE PATHS AND DIRECTORIES
+********************************************************************************
+
+* Detect operating system for cross-platform compatibility
 local os : environment OS
 local is_win = strpos("`os'", "Windows") > 0
 
-* Get username
+* Get username (cross-platform)
 local user : environment USER
-if "`user'" == "" local user : environment USERNAME  // For Windows
+if "`user'" == "" local user : environment USERNAME  // For Windows systems
 
-* Define base path depending on OS
+* Define base project directory path based on operating system
 if `is_win' {
-    global proj_dir "C:/Users/`user'/Dropbox/Labor_Market_PT/replication/final" // Maybe different?
+    global proj_dir "C:/Users/`user'/Dropbox/Labor_Market_PT/replication/final"
 }
 else {
     global proj_dir "/Users/`user'/Library/CloudStorage/Dropbox/Labor_Market_PT/replication/final"
 }
+
+* Define input and output directories
 global data_dir = "$proj_dir/data/raw"
 global output_dir = "$proj_dir/data/processed"
 
-******* Figure B.5, Panel B, C ******************************************************
 
+********************************************************************************
+* FIGURE B.5, PANEL B, C
+* Wage Growth by Quartile and Job Mobility Status
+********************************************************************************
+
+* Load Atlanta Fed wage data
 use "$data_dir/atl_fed/atl_fed_wage_raw.dta", clear
 
+* Create observation counter for weighting
 gen obs = 1
 
-* Wage Growth by Quartile x jstayergroup
+* Process wage growth by quartile and job mobility status
 preserve 
-* Take the median wage growth for each group
+
+* Calculate median wage growth for each group
 collapse (median) med_w_growth = wagegrowthtracker83 (sum) wgt = obs, ///
     by(date_monthly wagegroup jstayergroup)
 
-* Sort to prepare for moving average
+* Sort data to prepare for moving average calculation
 sort wagegroup jstayergroup date_monthly
 
-* 3-month moving average
+* Calculate 12-month moving average for smoother trends
 gen smoothed_med_w_growth = ( ///
     med_w_growth + ///
-    med_w_growth[_n-1] + med_w_growth[_n-2] + med_w_growth[_n-3] + med_w_growth[_n-4] + med_w_growth[_n-5] + ///
-    med_w_growth[_n-6] + med_w_growth[_n-7] + med_w_growth[_n-8] + med_w_growth[_n-9] + med_w_growth[_n-10] + ///
-    med_w_growth[_n-11]) / 12
+    med_w_growth[_n-1] + med_w_growth[_n-2] + med_w_growth[_n-3] + ///
+    med_w_growth[_n-4] + med_w_growth[_n-5] + med_w_growth[_n-6] + ///
+    med_w_growth[_n-7] + med_w_growth[_n-8] + med_w_growth[_n-9] + ///
+    med_w_growth[_n-10] + med_w_growth[_n-11]) / 12
 
-
-* Rename for consistency
+* Rename for consistency with other scripts
 rename smoothed_med_w_growth smwg
 
-* Create group ID
+* Create group identifier string
 gen group = wagegroup + "_" + jstayergroup
 replace group = subinstr(group, " ", "_", .)
 

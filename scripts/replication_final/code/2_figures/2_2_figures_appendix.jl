@@ -1,10 +1,21 @@
-######################################################################
-# Date Created: 7/13/2025
-# Last Modified: 7/13/2025
-# This Code:
-# - takes the processed data from /replication_final/data/processed
-# - makes the following figures: Figure B.6 and Figure B.8
-######################################################################
+################################################################################
+# FIGURE GENERATION - APPENDIX FIGURES (JULIA)
+#
+# Purpose: Generate figures for appendix
+#
+# Description:
+#   - Takes processed data from /replication_final/data/processed
+#   - Generates appendix figures
+#   - Outputs PDF figures to /replication_final/output/figures
+#
+# Figures Generated:
+#   - Figure B.6, Panel A/B/C/D: Real Wage Growth, By Wage Quartile
+#   - Figure B.8, Panel A/B: % Deviations from Trend in Real Wages by Education
+#   - Figure B.14, Panel A: Quarterly Corporate Profits to GDP Ratio (2016-2024)
+#
+# Author: Yash Singh, Giyoung Kwon
+# Last Updated: 2025/7/28
+################################################################################
 
 using Statistics
 using Binscatters

@@ -1,26 +1,57 @@
+********************************************************************************
+* TABLE GENERATION - APPENDIX TABLES (STATA)
+* 
+* Purpose: Generate tables for appendix
+* 
+* Description:
+*   - Takes data from /replication_final/data/processed
+*   - Creates formatted tables for appendix
+*   - Outputs LaTeX-formatted tables to /replication_final/output/tables
+*
+* Tables Generated:
+*   - Table B.1: Employment to Population Ratio Over Time, 15-64 Year Olds
+*   - Table B.2: Selection Table
+*
+* Author: Yash Singh, Giyoung Kwon
+* Last Updated: 2025/7/28
+********************************************************************************
+
+* Clear environment and set up
 clear all
 set more off
 
+
+********************************************************************************
+* SETUP: CONFIGURE PATHS AND DIRECTORIES
+********************************************************************************
+
+* Detect operating system for cross-platform compatibility
 local os : environment OS
 local is_win = strpos("`os'", "Windows") > 0
 
-* Get username
+* Get username (cross-platform)
 local user : environment USER
-if "`user'" == "" local user : environment USERNAME  // For Windows
+if "`user'" == "" local user : environment USERNAME  // For Windows systems
 
-* Define base path depending on OS
+* Define base project directory path based on operating system
 if `is_win' {
     global proj_dir "C:/Users/`user'/Dropbox/Labor_Market_PT/replication/final" 
 }
 else {
     global proj_dir "/Users/`user'/Library/CloudStorage/Dropbox/Labor_Market_PT/replication/final"
 }
+
+* Define input and output directories
 global data_dir = "$proj_dir/data/raw"
 global temp_dir = "$proj_dir/data/moments/temp"
 global output_dir = "$proj_dir/output/tables"
 
-******* Table B.1 ******************************************************************
 
+********************************************************************************
+* TABLE B.1: DEMOGRAPHICS AND SAMPLE CHARACTERISTICS
+********************************************************************************
+
+* Load and process CPS data for demographic analysis
 quietly infix                   ///
   int     year         1-4      ///
   long    serial       5-9      ///

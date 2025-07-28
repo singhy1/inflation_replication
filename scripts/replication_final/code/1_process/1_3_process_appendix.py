@@ -1,12 +1,33 @@
-######################################################################
-# Date Created: 7/10/2025
-# Last Modified: 7/11/2025
-# This Code:
-# - takes the raw data from /replication_final/data/raw
-# - processes it to create Dataframes for making all figures
-# - in the appendix.
-######################################################################
+################################################################################
+# DATA PROCESSING - MAIN TEXT FIGURES (PYTHON)
+# 
+# Purpose: Process raw data to create clean datasets for main text figures
+# 
+# Description:
+#   - Takes raw data from /replication_final/data/raw
+#   - Creates processed datasets for appendix figures
+#   - Outputs to /replication_final/data/processed
+#
+# Generated Processed Datasets:
+#   - figure_B_1.csv
+#   - figure_B_2.csv
+#   - figure_B_3.csv
+#   - figure_B_4.csv
+#   - figure_B_5_A.csv
+#   - figure_B_7.csv
+#   - figure_B_8.csv
+#   - figure_B_9.csv
+#   - figure_B_10.csv
+#   - figure_B_12.csv
+#   - figure_B_13.csv
+#   - figure_B_14_A.csv
+#   - figure_B_14_B.csv
+#
+# Author: Yash Singh, Giyoung Kwon
+# Last Updated: 2025/7/28
+################################################################################
 
+# Import required libraries
 import numpy as np 
 import pandas as pd 
 import os
@@ -16,83 +37,113 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 import statsmodels.api as sm
 import warnings
+
+# Suppress warnings for cleaner output
 warnings.filterwarnings("ignore")
 
-# Detect OS
+################################################################################
+# SETUP: CONFIGURE PATHS AND DIRECTORIES
+################################################################################
+
+# Detect operating system for cross-platform compatibility
 is_win = platform.system() == "Windows"
 
 # Get username (cross-platform)
 user = os.environ.get("USER") or os.environ.get("USERNAME")
 
-# Define base path
+# Define base project directory path
 if is_win:
     proj_dir = Path(f"C:/Users/{user}/Dropbox/Labor_Market_PT/replication/final")
 else:
     proj_dir = Path(f"/Users/{user}/Library/CloudStorage/Dropbox/Labor_Market_PT/replication/final")
 
-# Define other paths
+# Define input and output directories
 data_dir = proj_dir / "data" / "raw"
 output_dir = proj_dir / "data" / "processed"
 
-######################################################################
-# Load Raw Data
-######################################################################
+
+################################################################################
+# DATA LOADING: IMPORT ALL RAW DATASETS FOR APPENDIX
+################################################################################
+
 print("Loading raw data...")
 
-# Stock of Vacancies 
+# Stock of Vacancies (Barnichon data)
 vacancy_raw = pd.read_excel(f"{data_dir}/barnichon/barnichon_vacancy.xlsx")
-# Stock of Employed and Unemployed Workers 
+
+# Stock of Employed and Unemployed Workers (FRED)
 stocks_raw = pd.read_csv(f"{data_dir}/fred/fred_employment.csv")
-# JOLTS (level)
+
+# JOLTS - Job Openings and Labor Turnover Survey (levels)
 jolts_raw = pd.read_csv(f"{data_dir}/jolts/jolts_level.csv")
-# JOLTS (rates)
+
+# JOLTS - Job Openings and Labor Turnover Survey (rates)
 jolts_rates_raw = pd.read_csv(f"{data_dir}/jolts/jolts_rates.csv")
-# JOLTS (flows)
+
+# JOLTS - Industry flows data
 jolts_flows_raw = pd.read_excel(f"{data_dir}/jolts/jolts_industry_rates.xlsx", skiprows=2)
-# JOLTS (industry level)
+
+# JOLTS - Industry level data
 jolts_industry_raw = pd.read_excel(f"{data_dir}/jolts/jolts_industry_level.xlsx", skiprows=2)
-# Consumer Price Index
+
+# Consumer Price Index (FRED)
 cpi_raw = pd.read_csv(f"{data_dir}/fred/CPI.csv")
-# Average Wage Quartile
-wage_raw = pd.read_excel(f"{data_dir}/atl_fed/atl_fed_wage.xlsx", sheet_name = 'Average Wage Quartile', skiprows=2, header=0)
-# Job Switcher and Stayer Wage Growth
-switcher_raw = pd.read_excel(f"{data_dir}/atl_fed/atl_fed_wage.xlsx", sheet_name = 'Job Switcher', skiprows=2, header=0)    
-# FMP
+
+# Average Wage by Quartile (Atlanta Fed)
+wage_raw = pd.read_excel(f"{data_dir}/atl_fed/atl_fed_wage.xlsx", 
+                         sheet_name='Average Wage Quartile', 
+                         skiprows=2, header=0)
+
+# Job Switcher and Stayer Wage Growth (Atlanta Fed)
+switcher_raw = pd.read_excel(f"{data_dir}/atl_fed/atl_fed_wage.xlsx", 
+                            sheet_name='Job Switcher', 
+                            skiprows=2, header=0)    
+
+# Federal Reserve Economic Data - Job Movement Probability (FMP)
 fmp_raw = pd.read_csv(f"{data_dir}/fmp/fmp_ee_flow.csv") 
-# UE
-ue_raw = pd.read_csv(f"{data_dir}/fred/UE.csv")
-# EU
-eu_raw = pd.read_csv(f"{data_dir}/fred/EU.csv")
-# NE
-ne_raw = pd.read_csv(f"{data_dir}/fred/NE.csv")
-# NU
-nu_raw = pd.read_csv(f"{data_dir}/fred/NU.csv")
-# Unemployment Rate
-u_rate_raw = pd.read_csv(f"{data_dir}/fred/fred_urate.csv")
-# Employment to Population Ratio
-emp2pop_raw = pd.read_csv(f"{data_dir}/fred/fred_emp2pop.csv")
-# ADP
-adp_raw = pd.read_csv(f"{data_dir}/adp/adp_pay_history.csv")
-# Employment by Industry
-emp_industry_raw = pd.read_excel(f"{data_dir}/bls/hours_employed_industry.xlsx", sheet_name="MachineReadable")
-# Employment Flow by Education
-ee_flows_raw = pd.read_csv(f"{data_dir}/lehd/flows_by_education.csv")
-# Employment by Education
-employment_raw = pd.read_csv(f"{data_dir}/lehd/employment_by_education.csv")
-# Profit share
-profit_share_raw = pd.read_csv(f"{data_dir}/fred/profit_share.csv")
-# Gallup Financial Situation Data
-gallup_raw = pd.read_excel(f"{data_dir}/gallup/gallup_data.xlsx", sheet_name="Financial situation today", skiprows=7)
+
+# Labor Flow Data (FRED)
+ue_raw = pd.read_csv(f"{data_dir}/fred/UE.csv")         # Unemployment to Employment
+eu_raw = pd.read_csv(f"{data_dir}/fred/EU.csv")         # Employment to Unemployment
+ne_raw = pd.read_csv(f"{data_dir}/fred/NE.csv")         # Not in Labor Force to Employment
+nu_raw = pd.read_csv(f"{data_dir}/fred/NU.csv")         # Not in Labor Force to Unemployment
+
+# Additional Labor Market Indicators (FRED)
+u_rate_raw = pd.read_csv(f"{data_dir}/fred/fred_urate.csv")        # Unemployment Rate
+emp2pop_raw = pd.read_csv(f"{data_dir}/fred/fred_emp2pop.csv")     # Employment-Population Ratio
+
+# Wage and Compensation Data
+adp_raw = pd.read_csv(f"{data_dir}/adp/adp_pay_history.csv")       # ADP Pay History
+
+# Industry-Level Employment Data (BLS)
+emp_industry_raw = pd.read_excel(f"{data_dir}/bls/hours_employed_industry.xlsx", 
+                                 sheet_name="MachineReadable")
+
+# Education-Based Flow Data (LEHD)
+ee_flows_raw = pd.read_csv(f"{data_dir}/lehd/flows_by_education.csv")        # Employment flows by education
+employment_raw = pd.read_csv(f"{data_dir}/lehd/employment_by_education.csv") # Employment by education
+
+# Economic Indicators
+profit_share_raw = pd.read_csv(f"{data_dir}/fred/profit_share.csv")          # Profit share
+
+# Survey Data
+gallup_raw = pd.read_excel(f"{data_dir}/gallup/gallup_data.xlsx", 
+                          sheet_name="Financial situation today", 
+                          skiprows=7)
 
 
-######################################################################
-# Figure B.1, Panel A, B
-######################################################################
+################################################################################
+# FIGURE B.1, PANEL A, B
+# JOLTS Rates and Inflation Relationship
+################################################################################
+
 print("Processing data for Figure B.1, Panel A, B...")
 
+# Create working copies
 df = jolts_rates_raw.copy()
 cpi = cpi_raw.copy()
 
+# Process JOLTS rates data
 df.rename(columns={
     'observation_date': 'date',
     'JTSLDR': 'layoff_rate_jolts',
@@ -101,124 +152,157 @@ df.rename(columns={
 }, inplace=True)
 df['date'] = pd.to_datetime(df['date'])
 
+# Process CPI data
 cpi.rename(columns={'observation_date': 'date', 'CPIAUCSL': 'P'}, inplace=True)
 cpi['date'] = pd.to_datetime(cpi['date'])
 cpi['P'] = pd.to_numeric(cpi['P'], errors='coerce')
 cpi['P_12m_change'] = cpi['P'].pct_change(periods=12) * 100
 
+# Merge datasets and filter to analysis period
 df = df.merge(cpi, on='date')
 df = df[df['date'] >= '2016-01-01']
 df.sort_values('date', inplace=True)
 
+# Save processed data
 df.to_csv(f"{output_dir}/figure_B_1.csv", index=False)
 print("Processed data for Figure B.1, Panel A, B saved.")
 
-######################################################################
-# Figure B.2, Panel A, B, C
-######################################################################
+
+################################################################################
+# FIGURE B.2, PANEL A, B, C
+# Labor Market Flows and Rates
+################################################################################
+
 print("Processing data for Figure B.2, Panel A, B, C...")
 
+# Create working copies
 stocks = stocks_raw.copy()
 ue = eu_raw.copy()
 u_rate = u_rate_raw.copy()
 emp2pop = emp2pop_raw.copy()
 
+# Process employment/unemployment stocks
 stocks.columns = ['date', 'E', 'U']
 stocks = stocks.iloc[11:].reset_index(drop=True)
 stocks = stocks.dropna(subset=['date', 'E', 'U'])
 stocks['date'] = pd.to_datetime(stocks['date'])
 stocks['U'] = stocks['U'].astype(float)
 
+# Process employment to unemployment flows
 ue.columns = ['date', 'eu_flows']
 ue['date'] = pd.to_datetime(ue['date'])
 
-# Merge and calculate job finding rate
+# Calculate EU rate and merge
 data = stocks.merge(ue, on=['date'])
-data['eu_rate'] = (data['eu_flows'] / data['E'])* 100
+data['eu_rate'] = (data['eu_flows'] / data['E']) * 100
 
+# Process unemployment rate
 u_rate.columns = ['date', 'u_rate']
 u_rate = u_rate.iloc[11:].reset_index(drop=True)
 u_rate = u_rate.dropna(subset=['date', 'u_rate'])
 u_rate['date'] = pd.to_datetime(u_rate['date'])
 u_rate['u_rate'] = u_rate['u_rate'].astype(float)
 
+# Process employment-population ratio
 emp2pop.columns = ['date', 'emp2pop']
 emp2pop = emp2pop.iloc[11:].reset_index(drop=True)
 emp2pop = emp2pop.dropna(subset=['date', 'emp2pop'])
 emp2pop['date'] = pd.to_datetime(emp2pop['date'])
 emp2pop['emp2pop'] = emp2pop['emp2pop'].astype(float)
 
+# Merge all datasets
 final = data.merge(u_rate, on=['date'])
-final = final.merge(emp2pop, on= ['date'])
+final = final.merge(emp2pop, on=['date'])
 final = final[(final['date'] >= '2016-01-01')]
+
+# Select key variables and add period indicators
 keep = ['date', 'eu_rate', 'u_rate', 'emp2pop']
 final = final[keep].reset_index(drop=True)
-final['inf_period'] = ((final['date'] >= '2021-04-01') & (final['date'] <= '2023-05-01')).astype(int)
-final['pre_period'] = ((final['date'] <= '2019-12-01')).astype(int)
+final['inf_period'] = ((final['date'] >= '2021-04-01') & 
+                      (final['date'] <= '2023-05-01')).astype(int)
+final['pre_period'] = (final['date'] <= '2019-12-01').astype(int)
 
-# Mask out 2020 but keep NaNs so lines are broken
+# Create plot data with 2020 masked out for line breaks
 plot_data = final.copy()
-plot_data.loc[plot_data['date'].between('2020-01-01', '2020-12-31'), ['eu_rate', 'u_rate', 'emp2pop']] = np.nan
+plot_data.loc[plot_data['date'].between('2020-01-01', '2020-12-31'), 
+              ['eu_rate', 'u_rate', 'emp2pop']] = np.nan
 
+# Save processed data
 plot_data.to_csv(f"{output_dir}/figure_B_2.csv", index=False)
 print("Processed data for Figure B.2, Panel A, B, C saved.")
 
-######################################################################
-# Figure B.3, Panel A, B
-######################################################################
+
+################################################################################
+# FIGURE B.3, PANEL A, B
+# Labor Force Participation Flows (NE and NU)
+################################################################################
+
 print("Processing data for Figure B.3, Panel A, B...")
 
+# Create working copies
 NE = ne_raw.copy()
 NU = nu_raw.copy()
 
-# Basic Processing of stocks 
+# Process Not in Labor Force flows
 NE.columns = ['date', 'NE']
 NU.columns = ['date', 'NU']
 
+# Merge and convert to percentages
 data = NU.merge(NE, on=['date'])
-data['NU'] = data['NU']*100
-data['NE'] = data['NE']*100
+data['NU'] = data['NU'] * 100
+data['NE'] = data['NE'] * 100
 
-# Add pre/inflation period indicators
+# Add period indicators
 data['date'] = pd.to_datetime(data['date'])
-data['inf_period'] = ((data['date'] >= '2021-04-01') & (data['date'] <= '2023-05-01')).astype(int)
+data['inf_period'] = ((data['date'] >= '2021-04-01') & 
+                     (data['date'] <= '2023-05-01')).astype(int)
 data['pre_period'] = (data['date'] <= '2019-12-01').astype(int)
 
-# Mask out 2020 for line break
+# Create plot data with 2020 masked out for line breaks
 plot_data = data.copy()
-plot_data.loc[plot_data['date'].between('2020-01-01', '2020-12-31'), ['NE', 'NU']] = np.nan
+plot_data.loc[plot_data['date'].between('2020-01-01', '2020-12-31'), 
+              ['NE', 'NU']] = np.nan
 
+# Save processed data
 plot_data.to_csv(f"{output_dir}/figure_B_3.csv", index=False)
 print("Processed data for Figure B.3, Panel A, B saved.")
 
-######################################################################
-# Figure B.4
-######################################################################
+################################################################################
+# FIGURE B.4
+# Labor Market Flow Decomposition with Moving Averages
+################################################################################
+
 print("Processing data for Figure B.4...")
 
+# Create working copies
 stocks = stocks_raw.copy()
 eu = eu_raw.copy()
 ue = ue_raw.copy()
 
+# Process employment/unemployment stocks
 stocks.columns = ['date', 'E', 'U']
 stocks = stocks.iloc[11:].reset_index(drop=True)
 stocks = stocks.dropna(subset=['date', 'E', 'U'])
 stocks['date'] = pd.to_datetime(stocks['date'])
 stocks['U'] = stocks['U'].astype(float)
 
+# Process flow data
 eu.columns = ['date', 'eu_flows']
 ue.columns = ['date', 'ue_flows']
 
-flows = eu.merge(ue, on = ['date'])
+flows = eu.merge(ue, on=['date'])
 flows['date'] = pd.to_datetime(flows['date'])
 
-data = stocks.merge(flows, on = ['date'])
+# Merge stocks and flows
+data = stocks.merge(flows, on=['date'])
 
-data['L'] = data['E'] + data['U']
-data['u_rate'] = data['U'] / data['L']
-data['seperation_rate'] = data['eu_flows'] / data['E']
-data['job_finding_rate'] = data['ue_flows'] / data['U']
+# Calculate key labor market variables
+data['L'] = data['E'] + data['U']                                    # Labor force
+data['u_rate'] = data['U'] / data['L']                              # Unemployment rate
+data['seperation_rate'] = data['eu_flows'] / data['E']              # Job separation rate
+data['job_finding_rate'] = data['ue_flows'] / data['U']             # Job finding rate
 
+# Select key variables and calculate 3-month moving averages
 keep = ['date', 'u_rate', 'seperation_rate', 'job_finding_rate']
 final = data[keep]
 
@@ -226,50 +310,61 @@ final['u_rate_ma3'] = final['u_rate'].rolling(window=3).mean()
 final['seperation_rate_ma3'] = final['seperation_rate'].rolling(window=3).mean()
 final['job_finding_rate_ma3'] = final['job_finding_rate'].rolling(window=3).mean()
 
-keep = ['date', 'u_rate_ma3', 'seperation_rate_ma3', 'job_finding_rate_ma3' ]
-final = final[keep]
-final = final.rename(columns = {'u_rate_ma3' : 'u_rate', 'seperation_rate_ma3': 'seperation_rate', 'job_finding_rate_ma3':'job_finding_rate'})
+# Select smoothed variables for output
+keep_smoothed = ['date', 'u_rate_ma3', 'seperation_rate_ma3', 'job_finding_rate_ma3']
+final = final[keep_smoothed]
+final = final.rename(columns={
+    'u_rate_ma3': 'u_rate', 
+    'seperation_rate_ma3': 'seperation_rate', 
+    'job_finding_rate_ma3': 'job_finding_rate'
+})
 
+# Save processed data
 final.to_csv(f"{output_dir}/figure_B_4.csv", index=False)
 print("Processed data for Figure B.4 saved.")
 
-######################################################################
-# Figure B.5, Panel A
-######################################################################
+
+################################################################################
+# FIGURE B.5, PANEL A
+# Job Switcher vs Job Stayer Wage Growth Analysis
+################################################################################
+
 print("Processing data for Figure B.5...")
 
+# Create working copy and process switcher wage data
 data = switcher_raw.copy()
 df = pd.DataFrame(data)
 
-# Convert the date column to datetime objects
+# Convert date column to datetime objects
 df["Unnamed: 0"] = pd.to_datetime(df["Unnamed: 0"])
 
-# Replace placeholder '.' values with NaN
+# Replace placeholder '.' values with NaN and convert to numeric
 df.replace(".", float("nan"), inplace=True)
-
-# Convert the numeric columns to float
 df["Job Stayer"] = pd.to_numeric(df["Job Stayer"], errors="coerce")
 df["Job Switcher"] = pd.to_numeric(df["Job Switcher"], errors="coerce")
 
-# Set the date column as the index
+# Set date as index and filter to analysis period (2016-2024)
 df.set_index("Unnamed: 0", inplace=True)
-
-# Filter the dataframe to include only data from 2016 to 2024.
 start_date = "2016-01-01"
 end_date = "2024-12-31"
 filtered_df = df.loc[start_date:end_date]
 
+# Save processed data
 filtered_df.to_csv(f"{output_dir}/figure_B_5_A.csv", index=True)
 print("Processed data for Figure B.5, Panel A saved.")
 
-######################################################################
-# Figure B.7
-######################################################################
+################################################################################
+# FIGURE B.7
+# Real Wage Growth by Quartile - Extended Historical Analysis (2000-2024)
+################################################################################
+
 print("Processing data for Figure B.7...")
 
+# Create working copies
 data = wage_raw.copy()
 cpi = cpi_raw.copy()
 
+# Configure plotting parameters (for consistency across figures)
 plt.rcParams.update({
     'font.size': 14,             # Set default font size
     'axes.titlesize': 24,        # Title font size
@@ -282,39 +377,43 @@ plt.rcParams.update({
     'axes.spines.right': False,  # Remove right spine
 })
 
-# Atlanta Fed Wage Data 
+# Process Atlanta Fed wage data
 data = data.rename(columns={
     'Unnamed: 0': 'date',
     'Lowest quartile of wage distribution': 'Q1',
-     '2nd quartile of wage distribution': 'Q2', 
+    '2nd quartile of wage distribution': 'Q2', 
     '3rd quartile of wage distribution': 'Q3', 
     'Highest quartile of wage distribution': 'Q4'
 })
 
+# Select key wage quartile variables
 select = ['date', 'Q1', 'Q2', 'Q3', 'Q4']
 df = data[select]
 
-# CPI-U 
+# Process CPI-U data for price deflation
 cpi = cpi.iloc[10:].reset_index(drop=True)
-
 cpi = cpi.rename(columns={
-                            'observation_date': 'date', 
-                            'CPIAUCSL':               'P'
+    'observation_date': 'date', 
+    'CPIAUCSL': 'P'
 })
 
 cpi['date'] = pd.to_datetime(cpi['date'])
 cpi['P'] = pd.to_numeric(cpi['P'], errors='coerce')
 cpi['P_12m_change'] = cpi['P'].pct_change(periods=12) * 100
 
-wage_data = data.merge(cpi, on='date', how = 'left')
+# Merge wage and price data
+wage_data = data.merge(cpi, on='date', how='left')
 
-# 2000-2024 
+# Filter to extended historical period (2000-2024)
 wage_data = wage_data[wage_data['date'] >= '1999-12-01']
 wage_data = wage_data[wage_data['date'] <= '2024-12-01']
 
-wage_data = wage_data.drop(['Lowest half of wage distribution', 'Upper half of wage distribution'], axis = 1)
+# Remove unnecessary columns and reset index
+wage_data = wage_data.drop(['Lowest half of wage distribution', 
+                           'Upper half of wage distribution'], axis=1)
 wage_data = wage_data.reset_index(drop=True)
 
+# Initialize wage indices
 wage_data['wage_index_1'] = 1   
 wage_data['wage_index_2'] = 1
 wage_data['wage_index_3'] = 1
@@ -988,14 +1087,20 @@ profit_share['profit_share'] = profit_share['profit_share']*100
 profit_share.to_csv(f"{output_dir}/figure_B_14_A.csv", index=False)
 print("Processed data for Figure B.14, Panel A saved.")
 
-#######################################################################
-# Figure B.14, Panel B, Table B.4, Figure B.15
-#######################################################################
+################################################################################
+# FIGURE B.14, PANEL B, TABLE B.4, FIGURE B.15
+# Economic Indicators: Profit Share, Inflation, and Unemployment Analysis
+################################################################################
+
 print("Processing data for Figure B.14, Panel B...")
 
+# Merge profit share data with CPI and unemployment rate
 data = profit_share.merge(cpi, on='date')
 data = data.merge(u_rate, on='date')
+
+# Save processed data for multiple figures/tables
 data.to_csv(f"{output_dir}/figure_B_14_B.csv", index=False)
 data.to_csv(f"{output_dir}/figure_B_15.csv", index=False)
 print("Processed data for Figure B.14, Panel B saved.")
 print("Processed data for Figure B.15, Table B.4 saved.")
+

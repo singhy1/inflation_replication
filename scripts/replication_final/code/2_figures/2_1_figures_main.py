@@ -1,10 +1,19 @@
-######################################################################
-# Date Created: 7/11/2025
-# Last Modified: 7/13/2025
-# This Code:
-# - takes the processed data from /replication_final/data/processed
-# - creates Figure 6.1, Panel B and Table 4
-######################################################################
+################################################################################
+# FIGURE GENERATION - MAIN TEXT FIGURES (PYTHON)
+# 
+# Purpose: Generate figures for main text
+# 
+# Description:
+#   - Takes processed data from /replication_final/data/processed
+#   - Generates Figure 6.1 Panel B
+#   - Outputs PDF figures to /replication_final/output/figures
+#
+# Figures Generated:
+#   - Figure 6.1, Panel B: V/U Residuals vs. Inflation Residuals
+#
+# Author: Yash Singh, Giyoung Kwon
+# Last Updated: 2025/7/28
+################################################################################
 
 import numpy as np 
 import pandas as pd 
@@ -114,97 +123,3 @@ plt.savefig(f"{figures_dir}/figure_6_1_B.pdf")
 # #plt.show()
 print("Figure 6.1, Panel B processed and saved.")
 
-
-#######################################################################
-# Table 4
-#######################################################################
-print("Making Table 4...")
-
-def run_regression_get_latex(data, y_var, covariates):
-    X = sm.add_constant(data[covariates])
-    y = data[y_var]
-    model = sm.OLS(y, X).fit()
-    return model
-
-# Create LaTeX table header
-latex_table = """\\begin{table}[!htbp]
-\\centering
-\\caption{Regression Results}
-\\label{tab:regressions}
-\\begin{tabular}{lcccccc}
-\\hline\\hline
-& \\multicolumn{3}{c}{Vacancy Rate} & \\multicolumn{3}{c}{Labor Market Tightness} \\\\
-\\cline{2-4} \\cline{5-7}
-& (1) & (2) & (3) & (4) & (5) & (6) \\\\
-\\hline
-"""
-
-# Define specifications
-specs = [
-    ('V_rate', ['U_rate']),
-    ('V_rate', ['U_rate', 'P_12m_change']),
-    ('V_rate', ['U_rate', 'U_rate_squared', 'P_12m_change']),
-    ('tightness', ['U_rate']),
-    ('tightness', ['U_rate', 'P_12m_change']),
-    ('tightness', ['U_rate', 'U_rate_squared', 'P_12m_change'])
-]
-
-# Run all models and store results
-models = [run_regression_get_latex(reg_data, y_var, covs) for y_var, covs in specs]
-
-# Function to format coefficient with stars
-def format_coef(coef, pval):
-    coef_str = f"{coef:0.3f}"
-    if pval < 0.01:
-        coef_str += "^{***}"
-    elif pval < 0.05:
-        coef_str += "^{**}"
-    elif pval < 0.1:
-        coef_str += "^{*}"
-    return coef_str
-
-# Add coefficients to table
-variables = ['Unemployment Rate', 'Inflation', 'Unemployment Rate$^2$', 'Constant']
-var_mapping = {
-    'U_rate': 'Unemployment Rate',
-    'P_12m_change': 'Inflation',
-    'U_rate_squared': 'Unemployment Rate$^2$',
-    'const': 'Constant'
-}
-
-for var in ['U_rate', 'P_12m_change', 'U_rate_squared', 'const']:
-    row = f"{var_mapping[var]} & "
-    for model in models:
-        if var in model.params:
-            coef = format_coef(model.params[var], model.pvalues[var])
-            se = f"({model.bse[var]:0.3f})"
-            row += f"${coef}$ & "
-            row += f"{se} & "
-        else:
-            row += "& & "
-    row = row[:-2] + "\\\\"
-    latex_table += row + "\n"
-
-# Add R-squared and N
-latex_table += "\\hline\n"
-r2_row = "R$^2$ & "
-n_row = "Observations & "
-for model in models:
-    r2_row += f"{model.rsquared:0.3f} & "
-    n_row += f"{int(model.nobs)} & "
-r2_row = r2_row[:-2] + "\\\\\n"
-n_row = n_row[:-2] + "\\\\\n"
-latex_table += r2_row
-latex_table += n_row
-
-# Add table footer
-latex_table += """\\hline\\hline
-\\multicolumn{7}{l}{\\textit{Note:} Standard errors in parentheses} \\\\
-\\multicolumn{7}{l}{*** p$<$0.01, ** p$<$0.05, * p$<$0.1} \\\\
-\\end{tabular}
-\\end{table}"""
-
-with open(f"{table_dir}/table_4.tex", "w") as file:
-    file.write(latex_table)
-print("Table 4 processed and saved.")
- 

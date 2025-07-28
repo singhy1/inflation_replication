@@ -1,26 +1,57 @@
-log close _all
+********************************************************************************
+* DATA PROCESSING - MAIN TEXT FIGURES (STATA)
+* 
+* Purpose: Process raw data to create clean datasets for main text figures
+* 
+* Description:
+*   - Takes raw data from /replication_final/data/raw
+*   - Creates processed datasets for main text figures
+*   - Outputs to /replication_final/data/processed
+*
+* Generated Processed Datasets:
+*   - figure_2_4_temp1.csv
+*   - figure_2_4_temp2.csv
+*
+* Author: Yash Singh, Giyoung Kwon
+* Last Updated: 2025/7/28
+********************************************************************************
 
-* Set your own data and output directories
+* Close any open log files and set up environment
+log close _all
 clear all
 set more off
 
+
+********************************************************************************
+* SETUP: CONFIGURE PATHS AND DIRECTORIES
+********************************************************************************
+
+* Detect operating system for cross-platform compatibility
 local os : environment OS
 local is_win = strpos("`os'", "Windows") > 0
 
-* Get username
+* Get username (cross-platform)
 local user : environment USER
-if "`user'" == "" local user : environment USERNAME  // For Windows
+if "`user'" == "" local user : environment USERNAME  // For Windows systems
 
-* Define base path depending on OS
+* Define base project directory path based on operating system
 if `is_win' {
-    global proj_dir "C:/Users/`user'/Dropbox/Labor_Market_PT/replication/final" // Maybe different?
+    global proj_dir "C:/Users/`user'/Dropbox/Labor_Market_PT/replication/final"
 }
 else {
     global proj_dir "/Users/`user'/Library/CloudStorage/Dropbox/Labor_Market_PT/replication/final"
 }
+
+* Define input and output directories
 global data_dir = "$proj_dir/data/raw"
 global output_dir = "$proj_dir/data/processed"
 
+
+********************************************************************************
+* DATA LOADING AND PREPARATION
+********************************************************************************
+
+* Load work-from-home occupation codes (O*NET data)
 preserve 
 import delimited "$data_dir/dingelneiman/onet_wfh_code.csv", clear 
 rename occ_code oes_occ_code 
@@ -28,23 +59,26 @@ tempfile onet_temp
 save `onet_temp'
 restore
 
+* Load main Atlanta Fed wage data
 use "$data_dir/atl_fed/atl_fed_wage_raw.dta", clear
 
 
-* wage group 
+********************************************************************************
+* VARIABLE CREATION AND PROCESSING
+********************************************************************************
+
+* Extract numeric wage group from string variable
 gen wagegroup_num = real(regexs(1)) if regexm(wagegroup, "^([0-9]+)")
 
-
-* Create education group based on numeric codes
+* Create education group categories based on numeric education codes
 gen str15 educ_group = ""
 replace educ_group = "Bachelors+" if inlist(educ92, 6, 7)
 replace educ_group = "Less than Bachelors" if inlist(educ92, 1, 2, 3, 4, 5)
 
-
-* Create a string variable to hold the label
+* Initialize occupation label variable
 gen str occ_lbl = ""
 
-* Loop through all unique values of occ and assign labels
+* Assign occupation labels based on occupation codes
 levelsof occ, local(occs)
 foreach x of local occs {
     local lbl : label peio1ocd `x'

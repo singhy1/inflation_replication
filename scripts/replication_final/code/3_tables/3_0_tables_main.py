@@ -1,9 +1,19 @@
-######################################################################
-# Last Modified: 7/21/2025
-# This Code:
-# - takes data from /replication_final/data/processed and /replication_final/data/raw
-# - makes figures for the main text
-######################################################################
+################################################################################
+# TABLE GENERATION - MAIN TEXT TABLES (PYTHON)
+# 
+# Purpose: Generate tables for main text
+# 
+# Description:
+#   - Takes data from /replication_final/data/processed
+#   - Creates formatted tables for main text 
+#   - Outputs LaTeX-formatted tables to /replication_final/output/tables
+#
+# Tables Generated:
+#   - Table 4: Historical Beveridge curve Estimation
+#
+# Author: Yash Singh, Giyoung Kwon
+# Last Updated: 2025/7/28
+################################################################################
 
 import numpy as np 
 import pandas as pd 

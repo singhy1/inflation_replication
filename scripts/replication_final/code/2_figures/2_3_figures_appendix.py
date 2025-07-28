@@ -1,12 +1,30 @@
-######################################################################
-# Date Created: 7/11/2025
-# Last Modified: 7/13/2025
-# This Code:
-# - takes the processed data from /replication_final/data/processed
-# - makes figures for the appendix, except for Figure B.6 and Figure B.8
-# - creates Table B.4
-# - creates Figure 6.1, Panel B and Table 4
-######################################################################
+################################################################################
+# FIGURE GENERATION - APPENDIX FIGURES (PYTHON)
+# 
+# Purpose: Generate figures for appendix
+# 
+# Description:
+#   - Takes processed data from /replication_final/data/processed
+#   - Generates appendix figures
+#   - Outputs PDF figures to /replication_final/output/figures
+#
+# Figures Generated:
+#   - Figure B.1, Panel A/B: Annual Inflation vs Monthly Labor Market Flows
+#   - Figure B.2, Panel A/B/C: Employment-to-Population, Unemployment Rate and E-U Flows
+#   - Figure B.3, Panel A/B: Extensive Margin Labor Market Flows
+#   - Figure B.4: Decomposition of Unemployment Dynamics
+#   - Figure B.5, Panel A/B/C: % Nominal Wage Changes of Job-Stayers vs Job-Changers: Atlanta Fed Wage Tracker
+#   - Figure B.7, Panel A/B/C: Evolution of Real Wages with Alternative Pre-Trend
+#   - Figure B.9: Industry-Level % Changes: Quits vs Vacancies
+#   - Figure B.10, Panel A/B: E-E Rates, By Education
+#   - Figure B.12: Excellent/Good Financial Situation Over Time, Gallup Data
+#   - Figure B.13: Duration of Vacancy
+#   - Figure B.14, Panel B: Quarterly Corporate Profits to GDP Ratio (1950-2024)
+#   - Figure B.15: Profit Share and Inflation Residuals
+#
+# Author: Yash Singh, Giyoung Kwon
+# Last Updated: 2025/7/28
+################################################################################
 
 import numpy as np 
 import pandas as pd 

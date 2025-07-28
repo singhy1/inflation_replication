@@ -2,7 +2,6 @@ import subprocess
 import os
 import time
 
-
 # Record start time
 start_time = time.time()
 print(f"Script started at: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))}")
