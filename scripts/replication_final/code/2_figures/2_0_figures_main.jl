@@ -316,44 +316,7 @@ println("Figure 2.3, Panel B processed and saved.")
 ######################################################################
 println("Making figure for Figure 2.4, Panel A...")
 
-df = CSV.read("$(pathdata)/figure_2_4.csv", DataFrame,ntasks=1)
-df.date_monthly = MonthlyDate.(df.date)
-
-ticks = Dates.value.(collect(minimum(df.date_monthly):Month(12):maximum(df.date_monthly)+Month(12)))
-labels = string.(collect(minimum(df.date_monthly):Month(12):maximum(df.date_monthly)+Month(12)))
-p1 = plot(df.date_monthly, df.real_wage_index_1, label = "Real Wage Index", xrotation = 90, color = 1)
-plot!(df.date_monthly, df.predicted_real_wage_index_1, label = "Real Wage Index Pre-trend", linestyle = :dash, color = 1, linewidth = 1.0)
-plot!([df.date_monthly[end], df.date_monthly[end]], [min(df.real_wage_index_1[end], df.predicted_real_wage_index_1[end]), max(df.real_wage_index_1[end], df.predicted_real_wage_index_1[end])], line=arrow(:both, 8), linewidth = 1.0, color = 1, label = "")
-annotate!(p1, df.date_monthly[end]+Month(2), 1.128, text(L"\textbf{-2.4\%}", :center, 24, palette(:tab10).colors[1]))
-ylims!(p1, 0.96, 1.20)
-xlims!(p1, ticks[1], ticks[end]+9)
-xticks!(ticks, labels)
-# display(p1)
-savefig(p1, "$pathfigures/figure_2_4_A.pdf")
-println("Figure 2.4, Panel A processed and saved.")
-
-######################################################################
-# Figure 2.4, Panel B
-######################################################################
-println("Making figure for Figure 2.4, Panel B...")
-
-p1 = plot(df.date_monthly, df.real_wage_index_4, label = "", xrotation = 90, color = 1)
-plot!(df.date_monthly, df.predicted_real_wage_index_4, label = "", linestyle = :dash, color = 1, linewidth = 1.0)
-plot!([df.date_monthly[end], df.date_monthly[end]], [min(df.real_wage_index_4[end], df.predicted_real_wage_index_4[end]), max(df.real_wage_index_4[end], df.predicted_real_wage_index_4[end])], line=arrow(:both, 8), linewidth = 1.0, color = 1, label = "")
-annotate!(p1, df.date_monthly[end]+Month(2), 1.124, text(L"\textbf{-6.1\%}", :center, 24, palette(:tab10).colors[1]))
-ylims!(p1, 0.96, 1.20) 
-xlims!(p1, ticks[1], ticks[end]+9)
-xticks!(ticks, labels)
-# display(p1)
-savefig(p1, "$pathfigures/figure_2_4_B.pdf")
-println("Figure 2.4, Panel B processed and saved.")
-
-######################################################################
-# Figure 2.5, Panel A
-######################################################################
-println("Making figure for Figure 2.5, Panel A...")
-
-df = CSV.read("$(pathdata)/figure_2_5.csv", DataFrame)
+df = CSV.read("$(pathdata)/figure_2_4.csv", DataFrame)
 
 inflation_period = MonthlyDate.(["2021-04", "2023-05"])
 df.date_monthly = MonthlyDate.(df.date)
@@ -393,13 +356,13 @@ plot!(legend = :topright)
 # display(p1)
 
 # Save to file
-savefig(p1, "$pathfigures/figure_2_5_A.pdf")
-println("Figure 2.5, Panel A processed and saved.")
+savefig(p1, "$pathfigures/figure_2_4_A.pdf")
+println("Figure 2.4, Panel A processed and saved.")
 
 ######################################################################
-# Figure 2.5, Panel B
+# Figure 2.4, Panel B
 ######################################################################
-println("Making figure for Figure 2.5, Panel B...")
+println("Making figure for Figure 2.4, Panel B...")
 
 # Panel B: Quartile 1 
 filtered_df = filter(row -> Date("2020-01-01") <= row.date_monthly <= Date("2024-12-31"), df)
@@ -430,13 +393,13 @@ plot!(legend = :topright)
 # display(p1)
 
 # Save to file
-savefig(p1, "$pathfigures/figure_2_5_B.pdf")
-println("Figure 2.5, Panel B processed and saved.")
+savefig(p1, "$pathfigures/figure_2_4_B.pdf")
+println("Figure 2.4, Panel B processed and saved.")
 
 ######################################################################
-# Figure 2.5, Panel C
+# Figure 2.4, Panel C
 ######################################################################
-println("Making figure for Figure 2.5, Panel C...")
+println("Making figure for Figure 2.4, Panel C...")
 
 # Panel B: Quartile 4 
 filtered_df = filter(row -> Date("2020-01-01") <= row.date_monthly <= Date("2024-12-31"), df)
@@ -467,8 +430,8 @@ plot!(legend = :topright)
 # display(p1)
 
 # Save to file
-savefig(p1, "$pathfigures/figure_2_5_C.pdf")
-println("Figure 2.5, Panel C processed and saved.")
+savefig(p1, "$pathfigures/figure_2_4_C.pdf")
+println("Figure 2.4, Panel C processed and saved.")
 
 ######################################################################
 # Figure 6.1, Panel A

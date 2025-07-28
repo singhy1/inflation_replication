@@ -139,8 +139,7 @@ final.to_csv(f"{output_dir}/figure_6_1.csv", index=False)
 print("Processed data for Figure 6.1 saved.")
 
 ######################################################################
-# Figure 1.1, Panel B (Same data for Figure 2.4, Panel A, B and 
-# Figure B.6, Panel A, B)
+# Figure 1.1, Panel B (Same data for Figure B.6)
 ######################################################################
 print("Processing data for Figure 1.1, Panel B and Figure 2.4, Panel A, B...")
 
@@ -244,10 +243,8 @@ final = wage_data[main]
 
 final.to_csv(f"{output_dir}/figure_1_1_B.csv", index = False)
 print("Processed data for Figure 1.1, Panel B saved.")
-final.to_csv(f"{output_dir}/figure_2_4.csv", index = False)
-print("Processed data for Figure 2.4 saved.")
 final.to_csv(f"{output_dir}/figure_B_6.csv", index = False)
-print("Processed data for Figure B.6, Panel A, B saved.")
+print("Processed data for Figure B.6, Panel A, B, C, D saved.")
 
 
 ######################################################################
@@ -348,18 +345,14 @@ data = data.merge(cpi, on =['date'])
 data.to_csv(f"{output_dir}/figure_2_3.csv", index = False ) 
 print("Processed data for Figure 2.3, Panel A, B saved.")
 
-######################################################################
-# Figure 2.4, Panel A, B
-######################################################################
-# See Section for Figure 1.1, Panel B for data processing
 
 ######################################################################
-# Figure 2.5, Panel A, B, C
+# Figure 2.4, Panel A, B, C
 ######################################################################
-print("Processing data for Figure 2.5, Panel A, B, C...")
+print("Processing data for Figure 2.4, Panel A, B, C...")
 
-df = pd.read_csv(f"{output_dir}/figure_2_5_temp1.csv")
-df_pol = pd.read_csv(f"{output_dir}/figure_2_5_temp2.csv")
+df = pd.read_csv(f"{output_dir}/figure_2_4_temp1.csv")
+df_pol = pd.read_csv(f"{output_dir}/figure_2_4_temp2.csv")
 cpi = cpi_raw.copy()
 
 df = df.merge(df_pol, on='date_monthly')
@@ -452,18 +445,5 @@ for label, (actual_col, trend_col) in gap_columns.items():
     gap.iloc[0] = 0  # normalize gap to 0 at 2020-01
     gap_df[label] = gap.values
 
-gap_df.to_csv(f"{output_dir}/figure_2_5.csv", index= False)
-print("Processed data for Figure 2.5, Panel A, B, C saved.")
-
-
-
-######################################################################
-# Figure 6.1, Panel A
-######################################################################
-# See Section for Figure 1.1, Panel A for data processing
-
-######################################################################
-# Figure 6.1, Panel B 
-######################################################################
-# See Section for Figure 1.1, Panel A for data processing
-
+gap_df.to_csv(f"{output_dir}/figure_2_4.csv", index= False)
+print("Processed data for Figure 2.4, Panel A, B, C saved.")

@@ -446,10 +446,6 @@ slope = model.params[1]
 intercept = model.params[0]
 r_squared = model.rsquared
 
-print(f"Intercept: {intercept:.2f}")
-print(f"Slope (coefficient on vacancies): {slope:.2f}")
-print(f"R-squared: {r_squared:.2f}")
-
 # Predicted line
 x_pred = np.linspace(x.min(), x.max(), 100)
 y_pred = model.predict(sm.add_constant(x_pred))
@@ -503,9 +499,7 @@ pre_dates = pivot_quarterly.loc[pivot_quarterly['pre_period'] == 1].index
 inf_dates = pivot_quarterly.loc[pivot_quarterly['inf_period'] == 1].index
 
 avg_pre = pivot_quarterly.loc[pivot_quarterly['pre_period'] == 1, edu_group].mean()
-print("pre", avg_pre)
 avg_inf = pivot_quarterly.loc[pivot_quarterly['inf_period'] == 1, edu_group].mean()
-print("inflation", avg_inf)
 
 plt.figure(figsize=(8, 4))
 plt.plot(pivot_quarterly.index, pivot_quarterly[edu_group], marker='o', linewidth=2)
@@ -534,9 +528,7 @@ pre_dates = pivot_quarterly.loc[pivot_quarterly['pre_period'] == 1].index
 inf_dates = pivot_quarterly.loc[pivot_quarterly['inf_period'] == 1].index
 
 avg_pre = pivot_quarterly.loc[pivot_quarterly['pre_period'] == 1, edu_group].mean()
-print("pre", avg_pre)
 avg_inf = pivot_quarterly.loc[pivot_quarterly['inf_period'] == 1, edu_group].mean()
-print("inflation", avg_inf)
 
 plt.figure(figsize=(8, 4))
 plt.plot(pivot_quarterly.index, pivot_quarterly[edu_group], marker='o', linewidth=2)

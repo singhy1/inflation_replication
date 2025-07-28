@@ -35,9 +35,9 @@ figures_dir = proj_dir / "output" / "figures"
 table_dir = proj_dir / "output" / "tables"
 
 ######################################################################
-# Figure B.2
+# Figure B.3
 ######################################################################
-print("Making table for Figure B.2...")
+print("Making table for Figure B.3...")
 
 wage_data = pd.read_excel(f"{data_dir}/atl_fed/atl_fed_wage.xlsx", sheet_name = "Industry", skiprows=2, header=0)
 cpi = pd.read_csv(f"{data_dir}/fred/CPI.csv")
@@ -360,17 +360,14 @@ latex_table = f"""\\begin{{table}}[ht!]
 \\end{{table}}
 """
 
-# 4. Print the LaTeX so you can copy and paste into your .tex file
-print(latex_table)
-
 # save latex table
-with open(f"{table_dir}/table_B_2.tex", "w") as f:
+with open(f"{table_dir}/table_B_3.tex", "w") as f:
     f.write(latex_table)
 
 ######################################################################
-# Figure B.3
+# Figure B.4
 ######################################################################
-print("Making table for Figure B.3...")
+print("Making table for Figure B.4...")
 
 # Load the data
 financial_situation = pd.read_excel(f"{data_dir}/gallup/gallup_data.xlsx", sheet_name = "Financial situation today", skiprows=7)
@@ -520,14 +517,14 @@ latex_table_combined_updated = f"""\\begin{{table}}[ht!]
 \\end{{table}}"""
 
 # Save updated combined LaTeX table
-with open(f"{table_dir}/table_B_3.tex", "w") as f:
+with open(f"{table_dir}/table_B_4.tex", "w") as f:
     f.write(latex_table_combined_updated)
 
 
 ########################################################################
-# Table B.4
+# Table B.5
 ########################################################################
-print("Making Table B.4...")
+print("Making Table B.5...")
 
 data = pd.read_csv(f"{data_processed_dir}/figure_B_15.csv")
 reg_data = data[(data['date'] >= '1951-01-01') & (data['date'] <= '1999-12-01')].copy()
@@ -615,6 +612,6 @@ latex_table += """\\hline\\hline
 \\end{table}
 """
 
-with open(f"{table_dir}/table_B_4.tex", "w") as f:
+with open(f"{table_dir}/table_B_5.tex", "w") as f:
     f.write(latex_table)
-print("Table B.4 processed and saved.")
+print("Table B.5 processed and saved.")

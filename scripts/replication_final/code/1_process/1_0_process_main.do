@@ -454,7 +454,7 @@ reshape wide smw, i(date_monthly) j(group) string
 keep if date_monthly >= tm(2016m1)
 
 * now we have our wage growth measure for each wage group {1,2,3,4} x work-from-home exposure group {low, high}
-export delimited "$output_dir/figure_2_5_temp1.csv", replace 
+export delimited "$output_dir/figure_2_4_temp1.csv", replace 
 restore 
 ******************************************************************************************
 
@@ -487,5 +487,5 @@ reshape wide smw, i(date_monthly) j(group) string
 keep if date_monthly >= tm(2016m1)
 
 * now we have our wage growth measure for each wage group {1,2,3,4} x work-from-home exposure group {low, high}
-export delimited "$output_dir/figure_2_5_temp2.csv", replace 
+export delimited "$output_dir/figure_2_4_temp2.csv", replace 
 restore 

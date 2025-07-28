@@ -59,21 +59,21 @@ markersize = 10,
 linewidth = 3,
 size = (800, 600))
 
+
 ######################################################################
 # Figure B.6, Panel A
 ######################################################################
 println("Making figure for Figure B.6, Panel A...")
 
-df = CSV.read("$(pathdata)/figure_2_4.csv", DataFrame,ntasks=1)
+df = CSV.read("$(pathdata)/figure_B_6.csv", DataFrame,ntasks=1)
 df.date_monthly = MonthlyDate.(df.date)
 
 ticks = Dates.value.(collect(minimum(df.date_monthly):Month(12):maximum(df.date_monthly)+Month(12)))
 labels = string.(collect(minimum(df.date_monthly):Month(12):maximum(df.date_monthly)+Month(12)))
-
-p1 = plot(df.date_monthly, df.real_wage_index_2, label = "", xrotation = 90, color = 1)
-plot!(df.date_monthly, df.predicted_real_wage_index_2, label = "", linestyle = :dash, color = 1, linewidth = 1.0)
-plot!([df.date_monthly[end], df.date_monthly[end]], [min(df.real_wage_index_2[end], df.predicted_real_wage_index_2[end]), max(df.real_wage_index_2[end], df.predicted_real_wage_index_2[end])], line=arrow(:both, 8), linewidth = 1.0, color = 1, label = "")
-annotate!(p1, df.date_monthly[end]+Month(2), 1.13, text(L"\textbf{-1.5\%}", :center, 24, palette(:tab10).colors[1]))
+p1 = plot(df.date_monthly, df.real_wage_index_1, label = "Real Wage Index", xrotation = 90, color = 1)
+plot!(df.date_monthly, df.predicted_real_wage_index_1, label = "Real Wage Index Pre-trend", linestyle = :dash, color = 1, linewidth = 1.0)
+plot!([df.date_monthly[end], df.date_monthly[end]], [min(df.real_wage_index_1[end], df.predicted_real_wage_index_1[end]), max(df.real_wage_index_1[end], df.predicted_real_wage_index_1[end])], line=arrow(:both, 8), linewidth = 1.0, color = 1, label = "")
+annotate!(p1, df.date_monthly[end]+Month(2), 1.128, text(L"\textbf{-2.4\%}", :center, 24, palette(:tab10).colors[1]))
 ylims!(p1, 0.96, 1.20)
 xlims!(p1, ticks[1], ticks[end]+9)
 xticks!(ticks, labels)
@@ -86,6 +86,22 @@ println("Figure B.6, Panel A processed and saved.")
 ######################################################################
 println("Making figure for Figure B.6, Panel B...")
 
+p1 = plot(df.date_monthly, df.real_wage_index_2, label = "", xrotation = 90, color = 1)
+plot!(df.date_monthly, df.predicted_real_wage_index_2, label = "", linestyle = :dash, color = 1, linewidth = 1.0)
+plot!([df.date_monthly[end], df.date_monthly[end]], [min(df.real_wage_index_2[end], df.predicted_real_wage_index_2[end]), max(df.real_wage_index_2[end], df.predicted_real_wage_index_2[end])], line=arrow(:both, 8), linewidth = 1.0, color = 1, label = "")
+annotate!(p1, df.date_monthly[end]+Month(2), 1.13, text(L"\textbf{-1.5\%}", :center, 24, palette(:tab10).colors[1]))
+ylims!(p1, 0.96, 1.20)
+xlims!(p1, ticks[1], ticks[end]+9)
+xticks!(ticks, labels)
+# display(p1)
+savefig(p1, "$pathfigures/figure_B_6_B.pdf")
+println("Figure B.6, Panel B processed and saved.")
+
+######################################################################
+# Figure B.6, Panel C
+######################################################################
+println("Making figure for Figure B.6, Panel C...")
+
 p1 = plot(df.date_monthly, df.real_wage_index_3, label = "", xrotation = 90, color = 1)
 plot!(df.date_monthly, df.predicted_real_wage_index_3, label = "", linestyle = :dash, color = 1, linewidth = 1.0)
 plot!([df.date_monthly[end], df.date_monthly[end]], [min(df.real_wage_index_3[end], df.predicted_real_wage_index_3[end]), max(df.real_wage_index_3[end], df.predicted_real_wage_index_3[end])], line=arrow(:both, 8), linewidth = 1.0, color = 1, label = "")
@@ -94,8 +110,25 @@ ylims!(p1, 0.96, 1.20)
 xlims!(p1, ticks[1], ticks[end]+9)
 xticks!(ticks, labels)
 # display(p1)
-savefig(p1, "$pathfigures/figure_B_6_B.pdf")
-println("Figure B.6, Panel B processed and saved.")
+savefig(p1, "$pathfigures/figure_B_6_C.pdf")
+println("Figure B.6, Panel C processed and saved.")
+
+######################################################################
+# Figure B.6, Panel D
+######################################################################
+println("Making figure for Figure B.6, Panel D...")
+
+p1 = plot(df.date_monthly, df.real_wage_index_4, label = "", xrotation = 90, color = 1)
+plot!(df.date_monthly, df.predicted_real_wage_index_4, label = "", linestyle = :dash, color = 1, linewidth = 1.0)
+plot!([df.date_monthly[end], df.date_monthly[end]], [min(df.real_wage_index_4[end], df.predicted_real_wage_index_4[end]), max(df.real_wage_index_4[end], df.predicted_real_wage_index_4[end])], line=arrow(:both, 8), linewidth = 1.0, color = 1, label = "")
+annotate!(p1, df.date_monthly[end]+Month(2), 1.124, text(L"\textbf{-6.1\%}", :center, 24, palette(:tab10).colors[1]))
+ylims!(p1, 0.96, 1.20) 
+xlims!(p1, ticks[1], ticks[end]+9)
+xticks!(ticks, labels)
+# display(p1)
+savefig(p1, "$pathfigures/figure_B_6_D.pdf")
+println("Figure B.6, Panel D processed and saved.")
+
 
 ######################################################################
 # Figure B.8, Panel A
@@ -112,44 +145,7 @@ ticks = collect(minimum(df.date_monthly):Month(6):maximum(df.date_monthly))
 tick_labels = Dates.format.(ticks, "yyyy-mm")
 tick_values = Dates.value.(ticks)
 
-# Panel A: All Workers 
-filtered_df = filter(row -> Date("2020-01-01") <= row.date_monthly <= Date("2024-12-31"), df)
-
-# Initialize plot with invisible educ line to set up axis   
-p1 = plot(filtered_df.date_monthly, filtered_df.q4_Pooled,
-    label = "", xrotation = 90, alpha = 0.0)
-
-# Add shaded inflation period
-vspan!(inflation_period, label = "", alpha = 0.3, color = :grey)
-
-plot!(filtered_df.date_monthly, filtered_df.q1_Pooled,
-    label = "Quartile 1", color = 2, linestyle = :dash)
-
-plot!(filtered_df.date_monthly, filtered_df.q4_Pooled,
-    label = "Quartile 4", color = 1)
-
-# Add horizontal line at y = 0
-hline!([0], color = :black, linestyle = :solid, label = "")
-
-ylims!(p1, -10, 5)         
-yticks!(p1, -10:2:5)        
-
-xticks!(tick_values, tick_labels)
-
-# Add legend and display
-plot!(legend = :topright)
-# display(p1)
-
-# Save to file
-savefig(p1, "$pathfigures/figure_B_8_A.pdf")
-
-println("Figure B.8, Panel A processed and saved.")
-
-##########################################################################
-# Figuure B.8, Panel B
-##########################################################################
-println("Processing data for Figure B.8, Panel B...")
-# Panel B: Education < 16 
+# Panel A: Education < 16 
 filtered_df = filter(row -> Date("2020-01-01") <= row.date_monthly <= Date("2024-12-31"), df)
 
 p1 = plot(filtered_df.date_monthly, filtered_df.Bachelor_plus_1st_Quartile,
@@ -178,15 +174,15 @@ plot!(legend = :topright)
 # display(p1)
 
 # Save to file
-savefig(p1, "$pathfigures/figure_B_8_B.pdf")
+savefig(p1, "$pathfigures/figure_B_8_A.pdf")
 
-println("Figure B.8, Panel B processed and saved.")
+println("Figure B.8, Panel A processed and saved.")
 
 ######################################################################
-# Figure B.8, Panel C
+# Figure B.8, Panel B
 ######################################################################
-println("Processing data for Figure B.8, Panel C...")
-# Panel C: Education >= 16 
+println("Processing data for Figure B.8, Panel B...")
+# Panel B: Education >= 16 
 filtered_df = filter(row -> Date("2020-01-01") <= row.date_monthly <= Date("2024-12-31"), df)
 
 # Initialize plot with invisible WFH line to set up axis
@@ -215,8 +211,8 @@ plot!(legend = :topright)
 # display(p1)
 
 # Save to file
-savefig(p1, "$pathfigures/figure_B_8_C.pdf")
-println("Figure B.8, Panel C processed and saved.")
+savefig(p1, "$pathfigures/figure_B_8_B.pdf")
+println("Figure B.8, Panel B processed and saved.")
 
 ######################################################################
 # Figure B.14, Panel A

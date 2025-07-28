@@ -372,10 +372,6 @@ replace oes_occ_code = "51-9121" if occ_lbl == "Painting workers 51-9120"
 
 merge m:1 oes_occ_code using `onet_temp'
 
-
-
-
-
 keep if _merge == 3
 drop _merge 
 
